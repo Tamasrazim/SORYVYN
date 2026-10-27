@@ -897,3 +897,24 @@ dialog{color:var(--text)}
 .library-import-note{margin:-9px 0 18px;color:#898b85;font-size:10px;line-height:1.6;max-width:680px}
 .library-backup-actions{flex-wrap:wrap}
 @media(max-width:760px){.library-import-note{margin-top:-4px}}
+
+
+/* Saved spread bookmarks */
+.reader-progress-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:7px}
+.reader-progress-bottom small{margin:0}
+.reader-bookmark-button{min-height:28px;padding:0 9px;font-size:9px;white-space:nowrap}
+.reader-bookmark-button[aria-pressed="true"]{background:#e6e7e1;color:#111;border-color:#e6e7e1}
+.bookmark-list{display:grid;gap:10px}
+.bookmark-row{display:flex;align-items:center;gap:15px;padding:14px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(110deg,#141617,#101112)}
+.bookmark-row-mark{display:grid;place-items:center;flex:0 0 38px;height:44px;border:1px solid #62655f;border-radius:5px;color:#e4e5df;font-size:17px;font-weight:700}
+.bookmark-row-main{display:grid;gap:5px;min-width:0;flex:1}
+.bookmark-row-main strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--text)}
+.bookmark-row-main small{font:8px var(--mono);letter-spacing:.07em;color:var(--muted)}
+.bookmark-row-actions{display:flex;align-items:center;gap:7px}
+.bookmark-row-actions .secondary-button{min-height:32px;padding:0 10px;font-size:9px;white-space:nowrap}
+@media(max-width:640px){
+  .reader-progress-bottom{align-items:flex-start;flex-direction:column;gap:6px}
+  .bookmark-row{align-items:flex-start;flex-wrap:wrap}
+  .bookmark-row-main{flex-basis:calc(100% - 55px)}
+  .bookmark-row-actions{flex:1 1 100%;padding-left:53px}
+}
