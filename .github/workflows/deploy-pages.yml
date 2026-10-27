@@ -1,0 +1,62 @@
+name: Deploy SORYVYN PWA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate application JavaScript
+        run: node --check app.js
+
+      - name: Verify deployment assets
+        run: |
+          test -f index.html
+          test -f app.css
+          test -f app.js
+          test -f manifest.webmanifest
+          test -f sw.js
+          test -f icon.svg
+          test -f privacy.html
+          test -f LICENSE
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Assemble static site
+        run: |
+          mkdir -p dist
+          cp index.html app.css app.js manifest.webmanifest sw.js icon.svg privacy.html LICENSE dist/
+          touch dist/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
