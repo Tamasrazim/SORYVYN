@@ -52,6 +52,14 @@ jobs:
           assert.match(html, /rel="manifest"/, 'HTML must link the PWA manifest');
           assert.match(html, /id="sourceCatalogue"/, 'Source catalogue mount point is missing');
           assert.match(html, /data-page="sources"/, 'Source browser route is missing');
+          assert.match(html, /id="bookSpread"/, 'Two-page book spread is missing');
+          assert.match(html, /id="leftBookPage"/, 'Left book page is missing');
+          assert.match(html, /id="rightBookPage"/, 'Right book page is missing');
+          assert.match(html, /id="bookFrame"/, 'Draggable 3D book frame is missing');
+          assert.match(css, /\.book-flip-sheet/, '3D page-turn layer is missing');
+          assert.match(js, /addEventListener\("pointerdown"/, 'Pointer drag must be supported');
+          assert.match(js, /addEventListener\("wheel"/, 'Mouse-wheel page turning must be supported');
+          assert.match(js, /function turnSpread\(/, 'Spread navigation must be implemented');
           assert.equal(manifest.display, 'standalone', 'PWA should install in standalone mode');
           assert.ok(manifest.icons?.length, 'PWA icon is required');
           assert.match(sw, /addAll\(APP_SHELL\)/, 'Service worker must precache the app shell');
