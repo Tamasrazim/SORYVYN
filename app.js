@@ -288,45 +288,265 @@
     $("#titleModal").scrollTop=currentScroll;
   }
 
+  const mangaScenes = [
+    {
+      key:"moon",
+      caption:"The night held its breath.",
+      art:'<svg viewBox="0 0 280 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="280" height="180" fill="#d6d7ce"/><circle cx="191" cy="46" r="30" fill="#f1efe4" stroke="#171a18" stroke-width="2"/><path d="M0 116L31 91 56 115 88 72 120 109 148 87 178 121 210 95 244 115 280 82V180H0Z" fill="#70766d"/><path d="M0 143L36 128 74 146 109 118 142 148 177 126 220 146 252 130 280 141V180H0Z" fill="#202522"/><path d="M18 0L9 42M45 8L38 35M255 9l-8 21M230 79l-13 16" stroke="#333832" stroke-width="2"/><circle cx="54" cy="42" r="2" fill="#222"/><circle cx="100" cy="28" r="2" fill="#222"/><circle cx="134" cy="51" r="1.8" fill="#222"/></svg>'
+    },
+    {
+      key:"portrait",
+      caption:"Someone was still out there.",
+      art:'<svg viewBox="0 0 280 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="280" height="180" fill="#c8cbc4"/><path d="M58 180Q54 99 70 54Q95 5 155 25Q219 20 227 92L245 180Z" fill="#252925"/><path d="M90 84Q85 45 125 34Q167 23 194 65L199 115Q185 155 141 159Q100 146 90 111Z" fill="#e6e5dc" stroke="#171a18" stroke-width="3"/><path d="M87 80Q89 26 135 20Q189 15 210 63L188 62 172 45 140 57 105 66Z" fill="#181b19"/><path d="M104 92l22-4M158 88l24 5M113 105l12 2M165 105l12-1M132 127q11 7 23-1" fill="none" stroke="#171a18" stroke-width="3" stroke-linecap="round"/><path d="M0 19L60 80M13 0L76 62M212 0l-22 31M250 11l-25 36M262 50l-20 22" stroke="#373a35" stroke-width="1.5" opacity=".8"/></svg>'
+    },
+    {
+      key:"city",
+      caption:"The signs all pointed nowhere.",
+      art:'<svg viewBox="0 0 280 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="280" height="180" fill="#d1d3cc"/><path d="M0 48H42V180H0ZM48 22H93V180H48ZM101 65H139V180H101ZM149 13H201V180H149ZM211 51H280V180H211Z" fill="#777d74" stroke="#202420" stroke-width="2"/><path d="M57 34h9v9h-9zM74 34h9v9h-9zM57 55h9v9h-9zM74 55h9v9h-9zM161 27h10v13h-10zM180 27h10v13h-10zM161 51h10v13h-10zM180 51h10v13h-10z" fill="#171b18"/><path d="M0 145L62 125 112 147 175 117 223 140 280 119V180H0Z" fill="#222623"/><path d="M13 158l54-16m-34 31 52-17m83 0 44-13m-19 30 62-17" stroke="#a8aca1" stroke-width="2"/><circle cx="240" cy="22" r="8" fill="#e8e7dd" stroke="#171b18" stroke-width="2"/></svg>'
+    },
+    {
+      key:"map",
+      caption:"The map was drawing itself.",
+      art:'<svg viewBox="0 0 280 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="280" height="180" fill="#deddd2"/><path d="M0 29Q37 4 64 36T123 28T182 33T245 21T280 34M-5 67Q32 43 71 68T140 67T205 59T285 66M-5 113Q36 88 76 114T145 112T211 102T283 115M-8 154Q42 135 77 153T145 151T215 142T281 158" fill="none" stroke="#777c70" stroke-width="1.5"/><path d="M35 0Q56 36 35 69T43 129T36 181M104 0Q128 30 103 65T111 127T104 180M190 0Q168 36 192 75T184 129T198 181M249 0Q230 39 251 77T242 133T250 182" fill="none" stroke="#9ba092" stroke-width="1.3"/><path d="M28 130C62 105 85 133 115 82S178 33 211 60 245 101 258 40" fill="none" stroke="#202420" stroke-width="3" stroke-dasharray="5 4"/><path d="M244 28l15 12-17 5" fill="none" stroke="#202420" stroke-width="3"/><circle cx="115" cy="82" r="5" fill="#f2f0e6" stroke="#171a18" stroke-width="2"/></svg>'
+    },
+    {
+      key:"forest",
+      caption:"A light moved between the trees.",
+      art:'<svg viewBox="0 0 280 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="280" height="180" fill="#d2d4cb"/><circle cx="145" cy="54" r="25" fill="#eeeDE2" stroke="#202420" stroke-width="2"/><path d="M-10 180L34 26 82 180ZM55 180L105 10 160 180ZM135 180L197 27 244 180ZM196 180L252 4 301 180Z" fill="#535b52"/><path d="M0 180L41 83 76 180ZM80 180L137 75 174 180ZM168 180L221 79 266 180Z" fill="#1f2520"/><path d="M0 143Q74 123 140 146T280 133V180H0Z" fill="#111613"/><path d="M138 180l5-30 6 30M146 154l-12-9m15 18 10-12" stroke="#e1e2d8" stroke-width="2" fill="none"/></svg>'
+    },
+    {
+      key:"silhouette",
+      caption:"There was a figure beyond the gate.",
+      art:'<svg viewBox="0 0 280 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="280" height="180" fill="#d8d9d0"/><path d="M41 180V29Q140 -3 239 29V180M57 180V42Q140 16 223 42V180" fill="none" stroke="#202420" stroke-width="4"/><path d="M70 180V62Q140 35 210 62V180" fill="#8b9187"/><circle cx="141" cy="93" r="12" fill="#171b18"/><path d="M124 109L157 109 170 157H112Z" fill="#171b18"/><path d="M140 157v23M115 135l-19 20M163 135l21 15" stroke="#171b18" stroke-width="7" stroke-linecap="round"/><path d="M0 171L54 152 88 170 125 159 164 172 210 153 280 170V180H0Z" fill="#242a24"/><path d="M20 13l-8 31M260 15l-13 29M235 8l-6 22" stroke="#343934" stroke-width="2"/></svg>'
+    }
+  ];
+
+  function renderMangaPanel(pageNumber, panelIndex, item){
+    const scene = mangaScenes[(pageNumber + panelIndex + item.id.length) % mangaScenes.length];
+    const bubble = (panelIndex === 1 || (panelIndex === 3 && pageNumber % 2 === 0))
+      ? '<span class="manga-speech-bubble">' + escapeHTML(scene.caption) + '</span>' : '';
+    return '<div class="manga-panel scene-' + scene.key + '">' +
+      '<span class="manga-panel-index">' + String(panelIndex + 1).padStart(2,"0") + '</span>' +
+      '<div class="manga-panel-art">' + scene.art + '</div>' +
+      bubble +
+      '<span class="manga-panel-caption">' + escapeHTML(scene.caption) + '</span>' +
+      '</div>';
+  }
+
+  function renderBookPageContent(pageNumber, item){
+    const layout = ["layout-a","layout-b","layout-c","layout-d"][(pageNumber - 1) % 4];
+    const heading = item.title.split(" ").slice(0,5).join(" ");
+    let panels = "";
+    for(let index=0; index<4; index++) panels += renderMangaPanel(pageNumber,index,item);
+    return '<div class="manga-page-inner">' +
+      '<div class="manga-page-head"><span>' + escapeHTML(heading.toUpperCase()) + '</span><span>CH. 01</span></div>' +
+      '<div class="manga-page-rule"></div>' +
+      '<div class="manga-panels ' + layout + '">' + panels + '</div>' +
+      '<div class="manga-page-foot"><span>SORYVYN · SAMPLE EDITION</span><span class="manga-page-number">' + String(pageNumber).padStart(2,"0") + '</span></div>' +
+      '</div>';
+  }
+
+  function setBookPage(element, pageNumber, item, side){
+    element.className = "book-page " + side;
+    element.dataset.page = String(pageNumber);
+    element.innerHTML = renderBookPageContent(pageNumber,item);
+  }
+
+  function renderBookSpread(){
+    const item = titleById(currentTitleId);
+    if(!item) return;
+    const leftPage = readerSpread * 2 + 1;
+    const rightPage = Math.min(TOTAL_PAGES,leftPage + 1);
+    setBookPage($("#leftBookPage"),leftPage,item,"left");
+    setBookPage($("#rightBookPage"),rightPage,item,"right");
+    $("#bookSpread").querySelectorAll(".book-flip-sheet").forEach(sheet=>sheet.remove());
+    $("#bookFrame").setAttribute("aria-label","Open book showing pages " + leftPage + " and " + rightPage + ". Drag the right page left to go forward or the left page right to go back. Mouse wheel and arrow keys also turn the spread.");
+    updateReaderUI(false);
+  }
+
+  function updateReaderUI(saveProgress){
+    const item = titleById(currentTitleId);
+    if(!item) return;
+    const leftPage = readerSpread * 2 + 1;
+    const rightPage = Math.min(TOTAL_PAGES,leftPage + 1);
+    const pageRange = String(leftPage).padStart(2,"0") + "–" + String(rightPage).padStart(2,"0");
+    const spreadNumber = String(readerSpread + 1).padStart(2,"0");
+    const spreadTotal = String(TOTAL_SPREADS).padStart(2,"0");
+    const label = "SPREAD " + spreadNumber + " / " + spreadTotal + " · PAGES " + pageRange;
+    $("#readerPageLabel").textContent = label;
+    $("#readerProgressLabel").textContent = label + " / " + String(TOTAL_PAGES).padStart(2,"0") + " TOTAL PAGES";
+    $("#readerSubtitle").textContent = "CHAPTER 01 · PAGES " + pageRange;
+    $("#readerProgressFill").style.width = (rightPage / TOTAL_PAGES * 100) + "%";
+    $("#readerPrev").disabled = readerSpread <= 0 || isPageTurning;
+    $("#readerNext").disabled = readerSpread >= TOTAL_SPREADS - 1 || isPageTurning;
+    $("#bookPrevZone").hidden = readerSpread <= 0 || isPageTurning;
+    $("#bookNextZone").hidden = readerSpread >= TOTAL_SPREADS - 1 || isPageTurning;
+    if(saveProgress){
+      state.progress[item.id] = rightPage;
+      persist();
+      renderDiscover();
+    }
+  }
+
   function openReader(id){
-    const item=titleById(id||currentTitleId);if(!item)return;
-    currentTitleId=item.id;
-    readerPage=Math.max(1,Math.min(8,Number(state.progress[item.id]||1)));
-    readerMode="page";
-    $$(".reader-mode").forEach(button=>button.classList.toggle("is-active",button.dataset.readerMode===readerMode));
-    $("#readerTitle").textContent=item.title;
-    renderReaderPage();
+    const item = titleById(id || currentTitleId);
+    if(!item) return;
+    currentTitleId = item.id;
+    const previousPage = Math.max(1,Math.min(TOTAL_PAGES,Number(state.progress[item.id] || 1)));
+    readerSpread = Math.min(TOTAL_SPREADS - 1,Math.max(0,Math.floor((previousPage - 1) / 2)));
+    isPageTurning = false;
+    activeFlip = null;
+    pointerDrag = null;
+    $("#readerTitle").textContent = item.title;
+    renderBookSpread();
+    updateReaderUI(true);
     closeModal($("#titleModal"));
     showModal($("#readerModal"));
   }
 
-  function renderReaderPage(){
-    const item=titleById(currentTitleId);if(!item)return;
-    const backgrounds=["#e0e0d8","#c8cbc4","#e6e4db","#bfc3bb","#e9e6dc","#d3d7d0","#e3e0d7","#c9cec6"];
-    const shapes=[
-      `<i class="page-shape" style="left:13%;top:36%;width:74%;height:31%;clip-path:polygon(50% 0,100% 100%,0 100%);background:#404641"></i><i class="page-shape" style="left:28%;top:48%;width:45%;height:31%;background:#858b7d;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>`,
-      `<i class="page-shape" style="left:22%;top:24%;width:56%;height:40%;border-radius:50%;border:1px solid #555c54;background:#a4aaa0;box-shadow:0 0 0 12px #171a180b"></i><i class="page-shape" style="left:10%;bottom:13%;width:80%;height:3px"></i>`,
-      `<i class="page-shape" style="left:15%;top:35%;width:70%;height:35%;transform:rotate(-18deg);border:1px solid #313531;background:#ffffff18"></i><i class="page-shape" style="left:27%;top:29%;width:46%;height:48%;border:1px solid #292d29;background:#ffffff18"></i>`,
-      `<i class="page-shape" style="left:10%;top:39%;width:80%;height:30%;clip-path:polygon(0 25%,100% 0,100% 100%,0 75%);background:#555a51"></i>`
-    ];
-    $("#readerPageArt").className="reader-page-art"+(readerMode==="webtoon"?" webtoon":"");
-    $("#readerCanvas").classList.toggle("webtoon-canvas",readerMode==="webtoon");
-    $("#readerPageArt").style.background=backgrounds[(readerPage-1)%backgrounds.length];
-    $("#readerPageArt").innerHTML=`<div class="page-heading">${escapeHTML(item.title.split(" ").slice(0,readerPage%3+1).join(" "))}<br><span style="font-size:.45em;font-weight:500;letter-spacing:.02em">CHAPTER 01 · PAGE ${String(readerPage).padStart(2,"0")}</span></div>${shapes[(readerPage-1)%shapes.length]}<div class="page-caption">${readerPage%2?"The map changes when no one is looking.":"Somewhere beyond the horizon, a new line appears."}</div><span class="page-number">SORYVYN · SAMPLE ${String(readerPage).padStart(2,"0")}</span>`;
-    $("#readerPageLabel").textContent="PAGE "+String(readerPage).padStart(2,"0")+" / 08";
-    $("#readerProgressFill").style.width=(readerPage/8*100)+"%";
-    $("#readerPrev").disabled=readerPage<=1;
-    $("#readerNext").textContent=readerPage>=8?"Finish preview ✓":"Next page →";
-    state.progress[item.id]=readerPage;
-    persist();renderDiscover();
+  function prepareFlip(direction){
+    if(isPageTurning || !currentTitleId) return null;
+    const targetSpread = readerSpread + direction;
+    if(targetSpread < 0 || targetSpread >= TOTAL_SPREADS){
+      toast(direction > 0 ? "You've reached the end of this preview." : "You're at the beginning of this book.");
+      return null;
+    }
+    const item = titleById(currentTitleId);
+    if(!item) return null;
+    const currentLeft = readerSpread * 2 + 1;
+    const currentRight = Math.min(TOTAL_PAGES,currentLeft + 1);
+    const targetLeft = targetSpread * 2 + 1;
+    const targetRight = Math.min(TOTAL_PAGES,targetLeft + 1);
+
+    if(direction > 0){
+      setBookPage($("#leftBookPage"),currentLeft,item,"left");
+      setBookPage($("#rightBookPage"),targetRight,item,"right");
+    }else{
+      setBookPage($("#leftBookPage"),targetLeft,item,"left");
+      setBookPage($("#rightBookPage"),currentRight,item,"right");
+    }
+
+    const frontPage = direction > 0 ? currentRight : currentLeft;
+    const backPage = direction > 0 ? targetLeft : targetRight;
+    const frontSide = direction > 0 ? "right" : "left";
+    const backSide = direction > 0 ? "left" : "right";
+    const sheet = document.createElement("div");
+    sheet.className = "book-flip-sheet " + (direction > 0 ? "forward" : "backward");
+    sheet.style.left = direction > 0 ? "50%" : "0";
+    sheet.style.transformOrigin = direction > 0 ? "left center" : "right center";
+    sheet.style.transform = "rotateY(0deg)";
+    sheet.innerHTML = '<div class="book-flip-face front book-page ' + frontSide + '">' +
+      renderBookPageContent(frontPage,item) +
+      '</div><div class="book-flip-face back book-page ' + backSide + '">' +
+      renderBookPageContent(backPage,item) +
+      '</div><div class="book-flip-shade"></div>';
+    $("#bookSpread").append(sheet);
+    isPageTurning = true;
+    activeFlip = {sheet:sheet,direction:direction,fromSpread:readerSpread,toSpread:targetSpread,finishing:false,timer:null};
+    updateReaderUI(false);
+    return activeFlip;
   }
 
-  function moveReader(direction){
-    // RTL changes the intended reading direction in a real page engine; the preview controls still advance predictably.
-    const next=readerPage+direction;
-    if(next<1){toast("You're at the beginning of this preview.");return;}
-    if(next>8){state.progress[currentTitleId]=8;persist();closeModal($("#readerModal"));toast("Preview complete. Your progress was saved locally.");renderDiscover();renderRail();return;}
-    readerPage=next;renderReaderPage();
+  function finishFlip(flip,commit){
+    if(!flip || activeFlip !== flip) return;
+    if(flip.timer) window.clearTimeout(flip.timer);
+    if(commit) readerSpread = flip.toSpread;
+    activeFlip = null;
+    isPageTurning = false;
+    pointerDrag = null;
+    renderBookSpread();
+    updateReaderUI(true);
+  }
+
+  function settleFlip(commit){
+    const flip = activeFlip;
+    if(!flip || flip.finishing) return;
+    flip.finishing = true;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if(reducedMotion){
+      finishFlip(flip,commit);
+      return;
+    }
+    flip.sheet.style.transition = "transform 560ms cubic-bezier(.22,.72,.16,1)";
+    flip.sheet.style.setProperty("--flip-progress",commit ? "1" : "0");
+    flip.sheet.style.transform = commit
+      ? "rotateY(" + (flip.direction > 0 ? "-180deg" : "180deg") + ")"
+      : "rotateY(0deg)";
+    flip.sheet.addEventListener("transitionend",function(event){
+      if(event.target === flip.sheet && event.propertyName === "transform") finishFlip(flip,commit);
+    },{once:true});
+    flip.timer = window.setTimeout(()=>finishFlip(flip,commit),640);
+  }
+
+  function turnSpread(direction){
+    const flip = prepareFlip(direction);
+    if(!flip) return;
+    void flip.sheet.offsetWidth;
+    settleFlip(true);
+  }
+
+  function attachBookInteractions(){
+    const frame = $("#bookFrame");
+    frame.addEventListener("pointerdown",event=>{
+      if(!$("#readerModal").open || isPageTurning) return;
+      if(event.pointerType === "mouse" && event.button !== 0) return;
+      if(event.target.closest("button") || event.target.closest(".book-drag-indicator")) return;
+      const page = event.target.closest(".book-page");
+      if(!page) return;
+      const direction = page.classList.contains("right") ? 1 : -1;
+      const flip = prepareFlip(direction);
+      if(!flip) return;
+      pointerDrag = {pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,pageWidth:Math.max(1,frame.getBoundingClientRect().width/2),direction,moved:false,flip};
+      try{frame.setPointerCapture(event.pointerId);}catch(_){}
+      event.preventDefault();
+    });
+
+    frame.addEventListener("pointermove",event=>{
+      if(!pointerDrag || event.pointerId !== pointerDrag.pointerId || !activeFlip) return;
+      const dx = event.clientX - pointerDrag.startX;
+      const directedDistance = pointerDrag.direction > 0 ? -dx : dx;
+      const progress = Math.max(0,Math.min(1,directedDistance / pointerDrag.pageWidth));
+      pointerDrag.moved = pointerDrag.moved || Math.abs(dx) > 5;
+      if(!activeFlip.finishing){
+        activeFlip.sheet.style.transition = "none";
+        activeFlip.sheet.style.setProperty("--flip-progress",String(progress));
+        activeFlip.sheet.style.transform = "rotateY(" + (pointerDrag.direction > 0 ? -180*progress : 180*progress) + "deg)";
+      }
+      if(pointerDrag.moved) event.preventDefault();
+    });
+
+    frame.addEventListener("pointerup",event=>{
+      if(!pointerDrag || event.pointerId !== pointerDrag.pointerId) return;
+      const drag = pointerDrag;
+      const dx = event.clientX - drag.startX;
+      const directedDistance = drag.direction > 0 ? -dx : dx;
+      const progress = directedDistance / drag.pageWidth;
+      try{frame.releasePointerCapture(event.pointerId);}catch(_){}
+      pointerDrag = null;
+      settleFlip(drag.moved && progress >= 0.18);
+    });
+
+    frame.addEventListener("pointercancel",event=>{
+      if(!pointerDrag || event.pointerId !== pointerDrag.pointerId) return;
+      const drag=pointerDrag;
+      pointerDrag=null;
+      try{frame.releasePointerCapture(event.pointerId);}catch(_){}
+      settleFlip(false);
+    });
+
+    frame.addEventListener("wheel",event=>{
+      if(!$("#readerModal").open || isPageTurning) return;
+      const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      if(Math.abs(delta) < 14) return;
+      event.preventDefault();
+      const now = Date.now();
+      if(now < wheelLockUntil) return;
+      wheelLockUntil = now + 650;
+      turnSpread(delta > 0 ? 1 : -1);
+    },{passive:false});
+
+    $("#bookPrevZone").addEventListener("click",()=>turnSpread(-1));
+    $("#bookNextZone").addEventListener("click",()=>turnSpread(1));
   }
 
   function toggleSource(id){
@@ -382,9 +602,13 @@
   document.addEventListener("keydown",event=>{
     const titleButton=event.target.closest?.("[data-open-title]");
     if(titleButton&&(event.key==="Enter"||event.key===" ")){event.preventDefault();openTitle(titleButton.dataset.openTitle);}
-    if(event.key==="Escape"){$$("dialog[open]").forEach(dialog=>closeModal(dialog));}
+    if(event.key==="Escape"){$("dialog[open]").forEach(dialog=>closeModal(dialog));}
     const target=event.target;
     const isTyping=target instanceof HTMLInputElement||target instanceof HTMLTextAreaElement||target instanceof HTMLSelectElement||target.isContentEditable;
+    if($("#readerModal").open&&!isTyping&&!event.altKey&&!event.ctrlKey&&!event.metaKey){
+      if(event.key==="ArrowRight"||event.key==="PageDown"){event.preventDefault();turnSpread(1);return;}
+      if(event.key==="ArrowLeft"||event.key==="PageUp"){event.preventDefault();turnSpread(-1);return;}
+    }
     if(event.key==="/"&&!isTyping){event.preventDefault();$("#globalSearch").focus();}
     if((event.metaKey||event.ctrlKey)&&/^[1-7]$/.test(event.key)){
       event.preventDefault();const routes=["discover","library","updates","downloads","sources","history","favorites"];changeRoute(routes[Number(event.key)-1]);
@@ -437,20 +661,17 @@
   $("#profileButton").addEventListener("click",()=>toast("Local demo profile. Account sync is not part of Chunk 01."));
   $("#profileTop").addEventListener("click",()=>toast("SORYVYN preview · local browser storage only."));
   $("#roadmapLink").addEventListener("click",event=>{event.preventDefault();showModal($("#roadmapModal"));});
-  $("#readerPrev").addEventListener("click",()=>moveReader(-1));
-  $("#readerNext").addEventListener("click",()=>moveReader(1));
-  $$(".reader-mode").forEach(button=>button.addEventListener("click",()=>{
-    readerMode=button.dataset.readerMode;
-    $$(".reader-mode").forEach(btn=>btn.classList.toggle("is-active",btn===button));
-    renderReaderPage();
-    if(readerMode==="rtl")toast("Right-to-left navigation enabled for this preview.");
-    if(readerMode==="webtoon")toast("Vertical reader layout enabled for this preview.");
-  }));
-  $("#readerCanvas").addEventListener("click",event=>{
-    if(event.target.closest("button"))return;
-    if(readerMode==="webtoon")return;
-    const bounds=event.currentTarget.getBoundingClientRect();
-    moveReader(event.clientX<bounds.left+bounds.width/2?-1:1);
+  $("#readerPrev").addEventListener("click",()=>turnSpread(-1));
+  $("#readerNext").addEventListener("click",()=>turnSpread(1));
+  attachBookInteractions();
+  $("#readerModal").addEventListener("close",()=>{
+    if(activeFlip){
+      if(activeFlip.timer)window.clearTimeout(activeFlip.timer);
+      activeFlip.sheet.remove();
+      activeFlip=null;
+      isPageTurning=false;
+      pointerDrag=null;
+    }
   });
 
   window.addEventListener("online",()=>{$("#connectionLabel").textContent="LOCAL PREVIEW";toast("Connection restored. Demo data remains local.");});
