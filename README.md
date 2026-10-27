@@ -320,8 +320,10 @@ SORYVYN is not ready to call its browser complete until all of these are verifie
 12. Backup/restore validates format versions and reports incomplete restores clearly.
 13. The application remains usable with keyboard navigation, narrow windows, low-memory conditions, and reduced motion.
 
-## Licensing and content integrity
+## Proprietary ownership and content integrity
 
-SORYVYN's original project code and documentation are licensed under the MIT License in [`LICENSE`](./LICENSE). That permission does not automatically apply to third-party libraries, trademarks, remote websites, manga pages, or other content that may later be integrated. Review each dependency and source's terms before distribution, provide required notices, and keep attribution with imported content where applicable.
+**SORYVYN is proprietary software, not an open-source project.** Copyright © 2026 Robiul Rumman Razim (Tamasrazim). All rights reserved. The repository's [`LICENSE` notice](./LICENSE) does not grant a general right to reuse, modify, redistribute, or sell SORYVYN. Any additional permission must be provided in writing by the copyright holder, subject to applicable law and GitHub's terms for publicly hosted repositories.
+
+A public repository is visible to everyone, and GitHub's Terms of Service permit certain viewing and forking within GitHub. A proprietary notice does not make public source code invisible. Keep that distinction in mind when deciding repository visibility. Third-party components and content remain subject to their own rights and terms.
 
 SORYVYN must respect source access rules and make the source and origin of every online result visible. Never bypass DRM, paywalls, authentication, age checks, source access controls, or anti-abuse protections.
