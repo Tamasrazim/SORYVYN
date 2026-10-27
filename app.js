@@ -708,6 +708,9 @@
     $("#readerNext").disabled=readerSpread>=totalSpreads-1 || isPageTurning;
     $("#bookPrevZone").hidden=readerSpread<=0 || isPageTurning;
     $("#bookNextZone").hidden=readerSpread>=totalSpreads-1 || isPageTurning;
+    const bookmarked=isBookmarked(item.id,readerSpread);
+    $("#readerBookmark").setAttribute("aria-pressed",String(bookmarked));
+    $("#readerBookmark").textContent=bookmarked?"Bookmarked":"Bookmark spread";
     if(saveProgress){
       state.progress[item.id] = rightPage;
       persist();
