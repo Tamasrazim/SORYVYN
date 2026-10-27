@@ -12,6 +12,10 @@ The first browser-first build is available from `index.html`. It includes the re
 
 **Important:** sample sources are placeholders, not live services. The source browser intentionally stays inside SORYVYN and cannot browse arbitrary websites. Real source adapters and live chapter downloads are later chunks.
 
+### Run the PWA locally
+
+The web build has no package install or build step. From the repository root, run `python -m http.server 4173` and open `http://localhost:4173`. Keep the server running to test service-worker caching and installability. PWA behavior requires `localhost` or HTTPS; opening the file directly with `file://` does not provide the full PWA lifecycle. GitHub Pages deployment is not configured by this commit.
+
 ## Core interpretation of the Kotatsu reference
 
 The Kotatsu project is more than an image viewer, but its primary browse experience is **source-driven manga discovery**: users enable content sources, search across sources, inspect manga details and chapters, then read or download chapters. Its source catalogue is distinct from its small embedded WebView used when a source needs a browser-based interactive step such as authorization or challenge handling.
