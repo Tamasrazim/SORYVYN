@@ -638,17 +638,20 @@
 
   function prepareFlip(direction,quiet){
     if(isPageTurning || !currentTitleId) return null;
+    const activeItem=titleById(currentTitleId);
+    const totalSpreads=spreadCountFor(activeItem);
+    const totalPages=pageCountFor(activeItem);
     const targetSpread = readerSpread + direction;
-    if(targetSpread < 0 || targetSpread >= TOTAL_SPREADS){
+    if(targetSpread < 0 || targetSpread >= totalSpreads){
       if(!quiet) toast(direction > 0 ? "You've reached the end of this preview." : "You're at the beginning of this book.");
       return null;
     }
-    const item = titleById(currentTitleId);
+    const item = activeItem;
     if(!item) return null;
     const currentLeft = readerSpread * 2 + 1;
-    const currentRight = Math.min(TOTAL_PAGES,currentLeft + 1);
+    const currentRight = Math.min(totalPages,currentLeft + 1);
     const targetLeft = targetSpread * 2 + 1;
-    const targetRight = Math.min(TOTAL_PAGES,targetLeft + 1);
+    const targetRight = Math.min(totalPages,targetLeft + 1);
 
     if(direction > 0){
       setBookPage($("#leftBookPage"),currentLeft,item,"left");
