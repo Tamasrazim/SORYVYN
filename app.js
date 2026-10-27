@@ -453,6 +453,41 @@
     }).join("");
   }
 
+  function toggleCurrentBookmark(){
+    const item=titleById(currentTitleId);
+    if(!item)return;
+    const key=bookmarkKey(item.id,readerSpread);
+    if(state.bookmarks.includes(key)){
+      state.bookmarks=state.bookmarks.filter(value=>value!==key);
+      toast("Bookmark removed from this spread.");
+    }else{
+      state.bookmarks.push(key);
+      toast("Spread bookmarked.");
+    }
+    persist();
+    renderBookmarks();
+    updateReaderUI(false);
+  }
+
+  function unbookmarkSpread(key){
+    if(!parseBookmarkKey(key))return;
+    state.bookmarks=state.bookmarks.filter(value=>value!==key);
+    persist();
+    renderBookmarks();
+    updateReaderUI(false);
+    toast("Bookmark removed.");
+  }
+
+  function openBookmarkedSpread(key){
+    const entry=parseBookmarkKey(key);
+    if(!entry){
+      renderBookmarks();
+      toast("This bookmark no longer points to an available title.");
+      return;
+    }
+    openReader(entry.item.id,entry.spread);
+  }
+
   function renderCounters(){
     $("#libraryCount").textContent=String(state.savedIds.length).padStart(2,"0");
     $("#downloadCount").textContent="00";
