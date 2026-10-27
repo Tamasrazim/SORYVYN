@@ -2,13 +2,13 @@
 
 **A focused manga, manhwa, and manhua discovery and reading application.**
 
-SORYVYN is a desktop-first reading app with a local library, an online source catalogue, unified manga search, chapter details, an image-first reader, offline downloads, reading progress, favorites, bookmarks, and backups.
+SORYVYN is being built as a desktop-first manga reader. The intended product includes a local library, manga-only source catalogue, unified search, chapter details, offline reading, progress, favorites, bookmarks, and backups; the live-source and download systems are still in development.
 
 > **Repository status:** Web PWA Chunk 01 is implemented. Chunks 02–07 are not complete. Local image-folder import is a partial step toward Chunk 04; versioned JSON backup/restore is an early slice of Chunk 06. This README defines the product and engineering contract; see [the seven-chunk PWA roadmap](./WEB-PWA-ROADMAP.md) for delivery status.
 
 ## Web PWA status — Chunk 01
 
-The first browser-first build is available from `index.html`. It includes the responsive SORYVYN shell, monochrome interface, Discover catalogue using eight original fictional sample titles, Manga/Manhwa/Manhua filters, search and sorting, title details, a 3D open-book reader preview with two facing pages and interactive page-turning, browser-storage persistence for saved items/favorites/history/progress, validated local JSON backup export/import, folder-based local page import saved in IndexedDB, and an internal source-browser sandbox. The PWA manifest, SVG icon, service worker, and initial offline app-shell cache are included. A privacy page is available at [`privacy.html`](./privacy.html) and is linked from the app footer. A GitHub Actions workflow checks JavaScript syntax and core PWA/category-scope assumptions.
+The current browser preview includes the responsive SORYVYN shell, monochrome interface, Discover catalogue using eight original fictional sample titles, Manga/Manhwa/Manhua filters, search and sorting, title details, a 3D open-book reader preview with two facing pages and interactive page-turning, browser-storage persistence for saved items/favorites/history/progress, validated local JSON backup export/import, folder-based local page import saved in IndexedDB, and an internal source-browser sandbox. The spread-bookmark UI is not active yet; saved page positions remain planned. The PWA manifest, SVG icon, service worker, and initial offline app-shell cache are included. A privacy page is available at [`privacy.html`](./privacy.html) and is linked from the app footer. A GitHub Actions workflow checks JavaScript syntax and core PWA/category-scope assumptions.
 
 **Important:** sample sources are placeholders, not live services. The source browser intentionally stays inside SORYVYN and cannot browse arbitrary websites. Real source adapters and live chapter downloads are later chunks.
 
