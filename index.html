@@ -190,11 +190,35 @@
     <button class="modal-close" data-close-modal aria-label="Close title details">×</button>
     <div id="titleModalContent"></div>
   </dialog>
-  <dialog class="modal reader-modal" id="readerModal" aria-label="SORYVYN reader">
-    <div class="reader-topbar"><div class="reader-brand"><span class="reader-mini-mark">S</span><span id="readerTitle">Preview reader</span></div><div class="reader-mode-controls"><button class="reader-mode is-active" data-reader-mode="page">Page</button><button class="reader-mode" data-reader-mode="webtoon">Webtoon</button><button class="reader-mode" data-reader-mode="rtl">RTL</button></div><button class="modal-close reader-close" data-close-modal aria-label="Close reader">×</button></div>
-    <div class="reader-canvas" id="readerCanvas"><div class="reader-page-art" id="readerPageArt"></div></div>
-    <div class="reader-controls"><button class="secondary-button" id="readerPrev">← Previous</button><div class="reader-progress"><span id="readerPageLabel">PAGE 01 / 08</span><div class="reader-progress-track"><span id="readerProgressFill"></span></div></div><button class="primary-button" id="readerNext">Next page →</button></div>
-    <div class="reader-demo-note">READER PREVIEW · ORIGINAL SAMPLE ART · CHUNK 01</div>
+  <dialog class="modal reader-modal" id="readerModal" aria-label="SORYVYN three-dimensional open-book reader">
+    <div class="reader-topbar">
+      <div class="reader-brand"><span class="reader-mini-mark">S</span><div class="reader-brand-copy"><strong id="readerTitle">Preview reader</strong><small id="readerSubtitle">CHAPTER 01 · OPEN BOOK</small></div></div>
+      <div class="reader-status"><span class="reader-book-chip"><i></i> OPEN BOOK · TWO-PAGE SPREAD</span><span id="readerPageLabel">SPREAD 01 / 04 · PAGES 01–02</span></div>
+      <button class="modal-close reader-close" data-close-modal aria-label="Close reader">×</button>
+    </div>
+    <div class="reader-bookroom" id="readerBookroom">
+      <div class="book-frame" id="bookFrame" role="group" aria-label="Open book. Drag a page left or right, use the mouse wheel, or use the Previous and Next spread buttons to turn pages.">
+        <div class="book-cover" aria-hidden="true"></div>
+        <div class="book-stack book-stack-left" aria-hidden="true"></div>
+        <div class="book-stack book-stack-right" aria-hidden="true"></div>
+        <div class="book-object">
+          <div class="book-spread" id="bookSpread">
+            <article class="book-page left" id="leftBookPage" aria-label="Left page"></article>
+            <article class="book-page right" id="rightBookPage" aria-label="Right page"></article>
+            <div class="book-spine" aria-hidden="true"></div>
+            <button class="page-edge-zone previous" id="bookPrevZone" type="button" aria-label="Turn to previous spread"><span>‹</span></button>
+            <button class="page-edge-zone next" id="bookNextZone" type="button" aria-label="Turn to next spread"><span>›</span></button>
+          </div>
+        </div>
+        <div class="book-drag-indicator"><span class="drag-corner">↶</span><span>DRAG A PAGE TO TURN</span><i></i><span>SCROLL TO FLIP</span></div>
+      </div>
+    </div>
+    <div class="reader-controls">
+      <button class="secondary-button reader-nav-button" id="readerPrev" type="button"><span aria-hidden="true">←</span> Previous spread</button>
+      <div class="reader-progress"><span id="readerProgressLabel">TURN THE PAGE · KEEP THE STORY MOVING</span><div class="reader-progress-track"><span id="readerProgressFill"></span></div><small>DRAG · WHEEL · ARROW KEYS</small></div>
+      <button class="primary-button reader-nav-button" id="readerNext" type="button">Next spread <span aria-hidden="true">→</span></button>
+    </div>
+    <div class="reader-demo-note">SORYVYN OPEN-BOOK PREVIEW · ORIGINAL SAMPLE PANELS · PAGE TURNING IS INTERACTIVE</div>
   </dialog>
   <dialog class="modal filter-modal" id="filterModal" aria-labelledby="filterTitle">
     <div class="modal-heading"><div><div class="eyebrow">REFINE YOUR DISCOVERY</div><h2 id="filterTitle">Find your kind of story.</h2></div><button class="modal-close" data-close-modal aria-label="Close filters">×</button></div>
