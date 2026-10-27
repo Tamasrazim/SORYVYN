@@ -75,6 +75,109 @@
     renderRail();
   }
 
+
+  function normalizeBackupState(backup){
+    if(!backup || backup.format !== "soryvyn-backup" || backup.version !== 1 || !backup.state || typeof backup.state !== "object"){
+      throw new Error("This is not a supported SORYVYN backup file.");
+    }
+    const incoming = backup.state;
+    const knownTitles = new Set(titles.map(item=>item.id));
+    const knownSources = new Set(sourceSeed.map(item=>item.id));
+    const uniqueKnown = (value,known) => Array.isArray(value)
+      ? [...new Set(value.filter(id=>typeof id === "string" && known.has(id)))]
+      : [];
+    const progress = {};
+    if(incoming.progress && typeof incoming.progress === "object" && !Array.isArray(incoming.progress)){
+      for(const [id,value] of Object.entries(incoming.progress)){
+        if(knownTitles.has(id) && Number.isInteger(value) && value >= 1 && value <= TOTAL_PAGES) progress[id]=value;
+      }
+    }
+    const knownGenres = new Set(["all",...new Set(titles.flatMap(item=>[item.genre,...item.tags]))]);
+    return {
+      savedIds:uniqueKnown(incoming.savedIds,knownTitles),
+      favoriteIds:uniqueKnown(incoming.favoriteIds,knownTitles),
+      history:uniqueKnown(incoming.history,knownTitles).slice(-100),
+      progress,
+      enabledSources:uniqueKnown(incoming.enabledSources,knownSources),
+      category:incoming.category === "All" || allowedCategories.has(incoming.category) ? incoming.category : "All",
+      genre:typeof incoming.genre === "string" && knownGenres.has(incoming.genre) ? incoming.genre : "all",
+      status:["all","Ongoing","Completed"].includes(incoming.status) ? incoming.status : "all",
+      theme:incoming.theme === "light" ? "light" : "dark",
+      noticeDismissed:incoming.noticeDismissed === true
+    };
+  }
+
+  function exportBackup(){
+    const backup = {
+      format:"soryvyn-backup",
+      version:1,
+      exportedAt:new Date().toISOString(),
+      state:{
+        savedIds:state.savedIds.slice(),
+        favoriteIds:state.favoriteIds.slice(),
+        history:state.history.slice(-100),
+        progress:{...state.progress},
+        enabledSources:state.enabledSources.slice(),
+        category:state.category,
+        genre:state.genre,
+        status:state.status,
+        theme:state.theme,
+        noticeDismissed:state.noticeDismissed
+      }
+    };
+    const blob = new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "soryvyn-backup-" + new Date().toISOString().slice(0,10) + ".json";
+    link.style.display = "none";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+    toast("Local backup exported. Keep the JSON file somewhere safe.");
+  }
+
+  async function importBackup(file){
+    if(!file) return;
+    if(file.size > 1024 * 1024){
+      toast("Backup file is larger than 1 MB.");
+      return;
+    }
+    try{
+      const parsed = JSON.parse(await file.text());
+      const restored = normalizeBackupState(parsed);
+      if(!window.confirm("Restore this SORYVYN backup and replace the current local preview state?")){
+        toast("Backup restore cancelled.");
+        return;
+      }
+      Object.assign(state,restored);
+      persist();
+      renderTheme();
+      titleQuery = "";
+      libraryQuery = "";
+      $("#globalSearch").value = "";
+      $("#librarySearch").value = "";
+      $("#filterCategory").value = state.category;
+      $("#filterGenre").value = state.genre;
+      $("#filterStatus").value = state.status;
+      if(state.noticeDismissed){
+        const notice = $("#dismissNotice")?.closest(".demo-notice");
+        if(notice) notice.remove();
+      }
+      renderDiscover();
+      renderLibrary();
+      renderHistory();
+      renderFavorites();
+      renderSources();
+      renderMiniSources();
+      renderRail();
+      toast("SORYVYN backup restored on this device.");
+    }catch(error){
+      toast(error instanceof SyntaxError ? "That file is not valid JSON." : (error.message || "Could not restore this backup."));
+    }
+  }
+
   function escapeHTML(value){
     return String(value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   }
@@ -640,6 +743,13 @@
     state.category="All";state.genre="all";state.status="all";titleQuery="";$("#globalSearch").value="";$("#filterCategory").value="All";$("#filterGenre").value="all";$("#filterStatus").value="all";renderDiscover();toast("Filters reset.");
   });
   $("#librarySearch").addEventListener("input",event=>{libraryQuery=event.target.value;renderLibrary();});
+  $("#exportBackupButton").addEventListener("click",exportBackup);
+  $("#importBackupButton").addEventListener("click",()=>$("#importBackupFile").click());
+  $("#importBackupFile").addEventListener("change",event=>{
+    const file=event.target.files && event.target.files[0];
+    event.target.value = "";
+    importBackup(file);
+  });
   $$(".view-toggle").forEach(button=>button.addEventListener("click",()=>{
     gridView=button.dataset.view;
     $$(".view-toggle").forEach(btn=>btn.classList.toggle("is-selected",btn===button));
