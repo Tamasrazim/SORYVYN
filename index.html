@@ -193,11 +193,11 @@
   <dialog class="modal reader-modal" id="readerModal" aria-label="SORYVYN three-dimensional open-book reader">
     <div class="reader-topbar">
       <div class="reader-brand"><span class="reader-mini-mark">S</span><div class="reader-brand-copy"><strong id="readerTitle">Preview reader</strong><small id="readerSubtitle">CHAPTER 01 · OPEN BOOK</small></div></div>
-      <div class="reader-status"><span class="reader-book-chip"><i></i> OPEN BOOK · TWO-PAGE SPREAD</span><span id="readerPageLabel">SPREAD 01 / 04 · PAGES 01–02</span></div>
+      <div class="reader-status"><span class="reader-book-chip"><i></i> OPEN BOOK · TWO-PAGE SPREAD</span><span id="readerPageLabel" aria-live="polite">SPREAD 01 / 04 · PAGES 01–02</span></div>
       <button class="modal-close reader-close" data-close-modal aria-label="Close reader">×</button>
     </div>
     <div class="reader-bookroom" id="readerBookroom">
-      <div class="book-frame" id="bookFrame" role="group" aria-label="Open book. Drag a page left or right, use the mouse wheel, or use the Previous and Next spread buttons to turn pages.">
+      <div class="book-frame" id="bookFrame" tabindex="0" role="group" aria-label="Open book. Drag a page left or right, use the mouse wheel, or use the Previous and Next spread buttons to turn pages.">
         <div class="book-cover" aria-hidden="true"></div>
         <div class="book-stack book-stack-left" aria-hidden="true"></div>
         <div class="book-stack book-stack-right" aria-hidden="true"></div>
