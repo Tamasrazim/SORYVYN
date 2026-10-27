@@ -296,6 +296,9 @@
   }
 
   function renderCover(item, extraClass = ""){
+    if(item.localImport && item.coverUrl){
+      return '<div class="cover-art local-import-cover '+extraClass+'" aria-hidden="true"><img src="'+escapeHTML(item.coverUrl)+'" alt="" loading="lazy"><span class="local-import-badge">LOCAL</span><span class="local-import-title">'+escapeHTML(item.title)+'</span></div>';
+    }
     const classes = item.cover || "cover-a";
     return `<div class="cover-art ${classes} ${extraClass}" aria-hidden="true">
       <span class="cover-label">SORYVYN ORIGINAL / SAMPLE</span>
