@@ -485,7 +485,7 @@ dialog{color:var(--text)}
 }
 .book-frame{
   position:relative;
-  width:min(100%,calc((100vh - 250px)*1.48));
+  width:min(100%,calc((100vh - 270px)*1.48));
   aspect-ratio:1.48;
   max-height:100%;
   flex:0 1 auto;
