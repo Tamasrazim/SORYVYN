@@ -11,7 +11,7 @@ Deliverables:
 - Manga / Manhwa / Manhua category filtering, search, sort, genre and status filters.
 - Browser-like source sandbox inside the app. It is intentionally not a general-purpose browser and never navigates to arbitrary websites.
 - Four clearly labelled illustrative source profiles, enable/disable controls, language filter, and internal Discover / Trending / Recently Added views.
-- Title detail modal; local reader preview with page, webtoon, and right-to-left demo modes.
+- Title detail modal and an immersive, original-art 3D book reader with facing left/right pages.
 - Local demo library, favorites, reading history and progress stored in browser storage.
 - Immersive 3D open-book reader preview showing two facing pages, a visible spine and page-stack edges.
 - Drag a page with mouse/touch to fold it across the spine, use mouse-wheel scrolling, keyboard arrows, edge controls or Previous/Next spread buttons.
@@ -28,6 +28,10 @@ Acceptance criteria:
 5. Saved titles, favorites, history, reader position, source toggles, theme, and notice dismissal persist locally where browser storage permits.
 6. The UI remains usable on mobile and desktop.
 7. The source catalogue never pretends placeholder sources are live connectors.
+8. The reader opens as a 3D two-page book with a center spine and visible page edges.
+9. Dragging a page animates the leaf across the spine, showing its reverse side before the next spread is revealed.
+10. Mouse-wheel scrolling, keyboard arrows, edge controls, and Previous/Next spread buttons all navigate the book.
+11. Reduced-motion settings skip the turn animation without blocking page navigation.
 
 ## Chunk 02 — Source engine and catalogue
 Build a real source adapter interface and registry. Define per-source metadata, allowed content categories, locales, capabilities, health, enabled state, bounded timeouts, cancellation, error reporting and rate-limit handling. Add automated category-policy tests at the source/result boundary. Do not add source-count claims until a tested registry provides the number.
