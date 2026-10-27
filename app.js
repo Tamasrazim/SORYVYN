@@ -432,7 +432,11 @@
     $("#downloadCount").textContent="00";
     $("#savedStat").textContent=String(state.savedIds.length).padStart(2,"0");
     $("#historyStat").textContent=String(new Set(state.history).size).padStart(2,"0");
-    $("#readStat").textContent=String(Object.values(state.progress).filter(page=>Number(page)>=8).length).padStart(2,"0");
+    const completedReads=Object.entries(state.progress).filter(([id,page])=>{
+      const item=titleById(id);
+      return item && Number(page)>=pageCountFor(item);
+    }).length;
+    $("#readStat").textContent=String(completedReads).padStart(2,"0");
     const capacity=Math.max(1,titles.length+localImportedTitles.length);
     $("#storagePercent").textContent=Math.min(100,Math.round(state.savedIds.length/capacity*100))+"%";
     $("#storageFill").style.width=Math.min(100,state.savedIds.length/capacity*100)+"%";
