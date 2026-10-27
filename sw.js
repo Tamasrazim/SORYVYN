@@ -1,12 +1,13 @@
 /* SORYVYN PWA service worker — Chunk 01 */
-const CACHE_VERSION = "soryvyn-shell-v2";
+const CACHE_VERSION = "soryvyn-shell-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./app.css",
   "./app.js",
   "./manifest.webmanifest",
-  "./icon.svg"
+  "./icon.svg",
+  "./privacy.html"
 ];
 
 self.addEventListener("install", event => {
