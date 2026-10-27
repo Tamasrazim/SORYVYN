@@ -587,20 +587,22 @@
   function updateReaderUI(saveProgress){
     const item = titleById(currentTitleId);
     if(!item) return;
-    const leftPage = readerSpread * 2 + 1;
-    const rightPage = Math.min(TOTAL_PAGES,leftPage + 1);
-    const pageRange = String(leftPage).padStart(2,"0") + "–" + String(rightPage).padStart(2,"0");
-    const spreadNumber = String(readerSpread + 1).padStart(2,"0");
-    const spreadTotal = String(TOTAL_SPREADS).padStart(2,"0");
-    const label = "SPREAD " + spreadNumber + " / " + spreadTotal + " · PAGES " + pageRange;
-    $("#readerPageLabel").textContent = label;
-    $("#readerProgressLabel").textContent = label + " / " + String(TOTAL_PAGES).padStart(2,"0") + " TOTAL PAGES";
-    $("#readerSubtitle").textContent = "CHAPTER 01 · PAGES " + pageRange;
-    $("#readerProgressFill").style.width = (rightPage / TOTAL_PAGES * 100) + "%";
-    $("#readerPrev").disabled = readerSpread <= 0 || isPageTurning;
-    $("#readerNext").disabled = readerSpread >= TOTAL_SPREADS - 1 || isPageTurning;
-    $("#bookPrevZone").hidden = readerSpread <= 0 || isPageTurning;
-    $("#bookNextZone").hidden = readerSpread >= TOTAL_SPREADS - 1 || isPageTurning;
+    const totalPages=pageCountFor(item);
+    const totalSpreads=spreadCountFor(item);
+    const leftPage=readerSpread*2+1;
+    const rightPage=Math.min(totalPages,leftPage+1);
+    const pageRange=String(leftPage).padStart(2,"0")+"–"+String(rightPage).padStart(2,"0");
+    const spreadNumber=String(readerSpread+1).padStart(2,"0");
+    const spreadTotal=String(totalSpreads).padStart(2,"0");
+    const label="SPREAD "+spreadNumber+" / "+spreadTotal+" · PAGES "+pageRange;
+    $("#readerPageLabel").textContent=label;
+    $("#readerProgressLabel").textContent=label+" / "+String(totalPages).padStart(2,"0")+" TOTAL PAGES";
+    $("#readerSubtitle").textContent=(item.localImport?"LOCAL IMAGE IMPORT":"CHAPTER 01")+" · PAGES "+pageRange;
+    $("#readerProgressFill").style.width=(rightPage/totalPages*100)+"%";
+    $("#readerPrev").disabled=readerSpread<=0 || isPageTurning;
+    $("#readerNext").disabled=readerSpread>=totalSpreads-1 || isPageTurning;
+    $("#bookPrevZone").hidden=readerSpread<=0 || isPageTurning;
+    $("#bookNextZone").hidden=readerSpread>=totalSpreads-1 || isPageTurning;
     if(saveProgress){
       state.progress[item.id] = rightPage;
       persist();
