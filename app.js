@@ -523,7 +523,8 @@
       const progress = directedDistance / drag.pageWidth;
       try{frame.releasePointerCapture(event.pointerId);}catch(_){}
       pointerDrag = null;
-      settleFlip(drag.moved && progress >= 0.18);
+      if(!drag.moved){finishFlip(drag.flip,false);return;}
+      settleFlip(progress >= 0.18);
     });
 
     frame.addEventListener("pointercancel",event=>{
