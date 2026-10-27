@@ -1,228 +1,319 @@
 # SORYVYN
 
-A cross-platform reading application for ebooks, manga, comics, and web-discovered reading material.
+**A focused manga, manhwa, and manhua discovery and reading application.**
 
-> **Project status:** Planning / initial specification. The repository is currently an empty starting point; this document defines the first implementation target.
+SORYVYN is a desktop-first reading app with a local library, an online source catalogue, unified manga search, chapter details, an image-first reader, offline downloads, reading progress, favorites, bookmarks, and backups.
 
-SORYVYN should combine a polished local library and reader with a powerful **in-app source browser**. Its capabilities should be comparable in scope to the source-discovery and built-in browsing workflow found in Kotatsu, while using an original SORYVYN interface, implementation, and architecture.
+> **Repository status:** Specification only. The repository currently has no application implementation. This README defines the intended product and engineering contract.
+
+## Core interpretation of the Kotatsu reference
+
+The Kotatsu project is more than an image viewer, but its primary browse experience is **source-driven manga discovery**: users enable content sources, search across sources, inspect manga details and chapters, then read or download chapters. Its source catalogue is distinct from its small embedded WebView used when a source needs a browser-based interactive step such as authorization or challenge handling.
+
+SORYVYN should reproduce the *capabilities and workflow concepts* that are relevant to a dedicated manga reader, using its own code, product identity, visual system, and architecture.
+
+**SORYVYN's online browser is not a general-purpose internet browser.** It must only discover and display manga, manhwa, or manhua. No general search engine, arbitrary URL bar, unrelated websites, general web feed, novels, western comics, or general download browsing belongs in the main browser experience.
+
+## Non-negotiable scope rules
+
+1. The online catalogue allowlist is limited to the product categories **Manga**, **Manhwa**, and **Manhua**.
+2. Sources explicitly classified as another content category are excluded from the catalogue.
+3. Online search results, recommendations, update feeds, related titles, and alternative-source results must apply the same category allowlist; a blocked category cannot re-enter through a secondary view.
+4. Adult/explicit-rated content is filtered from online discovery and recommendations. Unknown or conflicting rating metadata must not be treated as proof that a title is suitable.
+5. Local imports are separate from online discovery. The user may import supported reading files, but an imported file must not cause unrelated web content to appear in the online catalogue.
+6. The source-scoped interactive web view is only a utility for a selected manga source. It is not a route into unrestricted web browsing.
+7. Never bypass DRM, paywalls, logins, age checks, source access controls, or anti-abuse mechanisms. If a site requires an interactive action that SORYVYN cannot handle, explain the limitation and let the user decide what to do.
+8. Do not copy Kotatsu's source code, logo, text, or visual design. Reuse of GPL-licensed code or its parser library requires a deliberate licensing decision and compliance review.
 
 ## Product principles
 
-- **Reader first:** opening a book or chapter should be fast, stable, and comfortable.
-- **Local by default:** library metadata, reading progress, bookmarks, and downloaded files remain on the device unless the user explicitly enables a sync feature.
-- **Sources are modules:** web sources must not be tightly coupled to the interface or reading engine.
-- **Honest compatibility:** a source may break when its website changes; show clear health and error states rather than pretending it works.
-- **Respect source rules:** don't bypass DRM, paywalls, logins, age gates, or access controls. Users must have the necessary rights to download or retain material.
-- **No copied branding:** SORYVYN must have its own visual design, icons, copy, and user experience.
+- **Discover, then read:** the online flow is Catalogue → Search/Filters → Title Details → Chapter Selection → Reader.
+- **Local-first:** library data, progress, bookmarks, collections, settings, and downloaded pages live locally by default.
+- **Source adapters are independent:** UI components must not scrape websites directly.
+- **Partial results are useful:** one failing source must not break search across healthy sources.
+- **Accurate status:** show loading, cached, downloaded, unavailable, failed, and retrying states honestly.
+- **Original SORYVYN identity:** a polished, restrained interface with consistent original icons and motion, accessible contrast, no clutter, and no overlapping controls.
 
-## In-app browser and source discovery
+## 1. Online catalogue — manga-family content only
 
-The browser is a first-class part of SORYVYN, not just an external-link button.
+### Discover screen
 
-### Browser chrome and navigation
+The main browse surface is a catalogue, not a blank web browser.
 
-- Address/search field that accepts URLs or searches the configured search provider.
-- Back, forward, reload, stop, home, and copy-link actions.
-- Tabbed browsing with create, close, duplicate, and restore-last-session actions.
-- Loading progress, page title, favicon, and clear HTTPS/security indicators.
-- Downloads list with progress, destination, retry, cancel, and open-file actions.
-- Open a supported book, comic, or chapter from a webpage directly in the SORYVYN reader.
-- Context actions for links, images, and selected text where the embedded engine permits them.
-- Keyboard navigation and shortcuts, plus mouse, touch, and trackpad support.
-- Session restore is optional and can be disabled for private browsing.
+- A prominent manga search field.
+- Source cards or a source grid with source name, language, enabled/pinned state, and availability status.
+- Discoverable title cards with cover, title, alternate title when available, source, language, update/status information, and reading progress when already in the library.
+- Browse/search by title, author/artist, genre/tags, source, language, status, and other metadata that a source actually supports.
+- Filters and sort options adapt to source capabilities; do not show controls that the selected source cannot implement.
+- Filter by the three allowed content categories only: Manga, Manhwa, and Manhua.
+- Continue Reading, Recently Updated, Favorites, and local-library shelves may appear as clearly separate sections.
+- Every online item links to a manga detail view; never expose arbitrary website links as catalogue items.
+- Empty states explain how to enable a compatible source or adjust search filters.
 
-### Web compatibility and site sessions
+### Source catalogue and management
 
-- Use a maintained operating-system webview or another supported embedded browser engine; isolate browser-engine code behind an interface so it can be replaced later.
-- JavaScript and cookies must work for normal site compatibility.
-- Keep cookies, local storage, and authentication state scoped to the relevant site/profile.
-- Allow users to clear site data, browser cache, downloads, or all browsing history.
-- Offer per-site permissions for features such as pop-ups, notifications, and external links.
-- Support ordinary redirects, pagination, lazy-loaded images, and common chapter-page layouts when the site allows them.
-- Display understandable messages for unsupported sites, certificate errors, blocked requests, rate limits, CAPTCHA, or login requirements.
-- Do not silently defeat CAPTCHA, DRM, site access restrictions, or anti-abuse controls.
-- Make it clear that compatibility can differ by OS and embedded browser engine.
+Each source has metadata and an explicit capability record:
 
-### Privacy and protection controls
+- Stable source ID, display title, domain, language/locale, content category, connector version, supported operations, and current health state.
+- Enable/disable, pin/unpin, reorder, search, and filter by supported language.
+- Sort by name, language, recently added, and user-defined order where applicable.
+- Show source availability and last successful check without making unsupported claims about coverage.
+- Keep built-in and user-installed connectors distinguishable.
+- Show source-specific settings and explain when interactive authorization is required.
+- Broken, retired, or unmaintained sources must be marked clearly and can be disabled.
+- The catalogue allowlist is enforced centrally. UI filters alone are not sufficient.
+- Do not ship a source-count marketing number unless the count is generated from the tested, currently enabled source registry.
 
-- Optional private session that does not persist browser history, cookies, or site storage after it closes.
-- Per-site cookies/storage removal and global browser-data clearing.
-- Configurable pop-up blocking and optional content-filter lists for ads/trackers.
-- Content filtering must be transparent and user-configurable; do not inject unknown scripts or install extensions without consent.
-- Optional use of the system proxy and manually configured proxy settings, with connection errors surfaced clearly.
-- Safe download handling: show the source domain, filename, file type, and destination; warn for unexpected executable files.
-- No background collection of visited URLs, search terms, reading history, or downloaded content.
+### Unified multi-source search
 
-## Source catalogue and connector system
+- Search enabled sources concurrently using a bounded worker pool.
+- Return results progressively as individual sources finish.
+- Group results by source, with a combined view available for comparison.
+- Allow the user to see which sources returned results, returned none, or failed.
+- Support title and alternate-title matching; use author, artist, tag, and other search types only where supported.
+- Normalize title, alternate titles, cover, summary, authors, tags, status, language, source, and rating metadata.
+- De-duplicate cautiously. Preserve all known source links and never silently replace one title with a different title.
+- Rank by exact title match, alternate-title match, query relevance, and then stable metadata signals; explain any available sort choices.
+- Include cancellation, timeouts, bounded retries, cooldowns, and rate-limit awareness.
+- Search disabled sources only after the user explicitly asks to include them.
+- A failed or slow source cannot freeze the search screen.
+- Apply category and suitability filters after parsing as well as before rendering so malformed source metadata cannot bypass the catalogue rules.
 
-SORYVYN must support multiple online catalogues through a source-adapter API rather than hard-coding one website.
+### Manga detail view
 
-### Catalogue interface
+- Cover art, title, alternate titles, authors/artists, description, tags/genres, status, content category, source, language, and last-updated metadata when supplied.
+- Chapter and volume listing with number, title, release/upload date, language branch, and scanlator/group where supplied by the source.
+- Chapter sorting, branch selection, multi-select, and resume from the last-read chapter.
+- Buttons for Read/Continue, Download, Favorite, Add to Collection, Bookmark, Refresh Details, and Open Source Session when required.
+- Related-title and alternative-source sections must stay inside the Manga/Manhwa/Manhua allowlist and apply the content suitability filter.
+- Sanitize remote descriptions before rendering them; remote HTML is untrusted input.
+- Handle missing covers, missing descriptions, empty chapter lists, removed titles, and stale source metadata gracefully.
 
-- Browse a directory of available sources.
-- Search/filter sources by name, language, content type, availability, and user-enabled status.
-- Show source language, website domain, connector version, last health check, and the date it was last updated.
-- Enable, disable, pin, reorder, or remove a source.
-- Show source-specific settings and explain when a source needs a browser login.
-- Provide a manual refresh and a visible update state for the source registry.
-- Keep user-added connectors distinguishable from built-in or verified connectors.
-- Never claim a fixed number of supported sources unless that count is measured and current.
+## 2. Source adapter architecture
 
-### Unified discovery
+Each source adapter implements a documented, versioned interface. The interface should cover the following operations where the source supports them:
 
-- Search across all enabled compatible sources.
-- Search by title and, when supported, author, artist, genre, tags, status, and description.
-- Normalize duplicate results across sources while preserving the source links.
-- Sort and filter results by relevance, title, update time, source, language, and supported metadata.
-- Provide useful empty, loading, partial-result, timeout, and source-failure states.
-- Use cancellation and bounded concurrency so a slow source cannot freeze the entire search.
-- Keep individual source errors visible, while allowing healthy sources to return results.
+- Source metadata and capabilities.
+- List/catalogue retrieval with pagination, sort order, and filters.
+- Search by title/query and optional supported filter fields.
+- Fetch title details and chapter/volume listings.
+- Fetch chapter page manifests and resolve page image URLs.
+- Fetch source tags/filter options and related titles.
+- Resolve a pasted *manga title link* into a title record only when it belongs to an enabled compatible source.
+- Report authentication requirements, rate limits, unavailable titles, blocked requests, parsing failures, and unsupported operations as structured errors.
 
-### Source adapters
+Requirements:
 
-Define a documented, versioned interface for operations such as:
+- Stable, source-scoped identifiers for titles, chapters, and pages. Never assume two sources use the same ID namespace.
+- Do not hard-code domains inside parsing logic; support configured mirrors only when the source itself provides them.
+- Per-source network settings, user-agent handling when necessary, cookies scoped to that source, and bounded timeouts.
+- Cancellation and bounded parallel requests for search, metadata, page loading, and downloads.
+- Safe HTML/JSON parsing, schema validation, defensive image URL handling, and cache invalidation.
+- No unrestricted local-file access or access to secrets from source adapters.
+- Do not execute downloaded connector scripts as privileged application code.
+- A source error must not discard results already received from another source.
+- A connector is not considered compatible until it has tests and a documented maintenance state.
+- Keep parser registration, source metadata, and adapter implementation separate from UI code.
 
-- Fetch source metadata and capabilities.
-- Search a query with optional filters.
-- Retrieve a title's details and chapter/volume listing.
-- Retrieve page/image URLs for a chapter when allowed by the source.
-- Resolve next/previous chapter relationships when available.
-- Report authentication requirements and source-specific failures.
-- Normalize titles, authors, genres, status, cover images, chapters, and page metadata.
+## 3. Source-scoped interactive web session
 
-Adapters must have timeouts, cancellation, bounded retries, rate-limit awareness, and structured errors. They must not have unrestricted access to local files or secrets. Do not execute downloaded source scripts as privileged application code. If a community connector system is later added, it needs versioning, permission boundaries, compatibility tests, and a disable switch.
+Kotatsu's browser utility is associated with source actions; SORYVYN should keep that narrow purpose.
 
-### Source resilience
+- Open only from a selected source or title when that source explicitly requires an interactive step.
+- Display the source identity and the reason the session was opened.
+- Restrict navigation to the source's approved domain/mirror list; block arbitrary external navigation by default.
+- No general-purpose address bar, search-engine home page, arbitrary tabs, general web history, or general website bookmarks.
+- The session may use the source's required web runtime capabilities, but must not silently bypass CAPTCHA, sign-in checks, DRM, age gates, or access controls.
+- Provide Back, Reload, Stop, Close, loading progress, and clear error status only as needed for the source interaction.
+- On completion, return to the original SORYVYN action and update its state.
+- Keep source cookies and session data scoped to that source; provide a way to clear them.
+- If a challenge or login cannot be handled safely, show a clear failure/retry option rather than trying to evade it.
+- Use an OS-supported web runtime behind an isolated interface; never make the web runtime the primary catalogue or reader engine.
 
-- Health-check enabled sources without hammering their servers.
-- Remember recent source failures for the current session and apply a cooldown.
-- Offer alternate sources when the same title is available elsewhere.
-- Never switch to an unrelated title without asking.
-- Retain the original source URL and source identifier with imported metadata.
-- Give users a way to report a broken connector and export diagnostic details without including cookies, tokens, or personal browsing history.
+## 4. Reading engine
 
-## Reading workflow
+The reader is image-first, optimized for sequential manga pages and long vertical manhwa/manhua chapters.
 
-- Local library with cover grid/list views, sorting, filters, collections, and recently opened items.
-- Import files and folders using the file picker and drag-and-drop.
-- Prioritize EPUB, PDF, CBZ, CBR, and image-folder reading; add other formats only when tested and documented.
-- Manga modes: left-to-right, right-to-left, vertical/webtoon, and single-page or double-page layouts where appropriate.
-- Reader settings for zoom, fit width/height, background, margins/gaps, page transition, and image scaling.
+### Reading modes
+
+- Single-page mode.
+- Double-page mode where appropriate.
+- Right-to-left page progression.
+- Left-to-right page progression.
+- Vertical scrolling/Webtoon mode.
+- Automatic mode detection may be offered, but the user can override it per title.
+- Remember the preferred reading mode and settings per title or source where useful.
+
+### Reader controls
+
+- Previous/next page and chapter.
+- Progress indicator, page number, chapter list, and jump-to-page controls.
+- Fit-to-width, fit-to-height, original-size, zoom, and pan.
+- Adjustable page gap, margins, background, image scaling, and page transition.
+- Optional color correction such as brightness, contrast, grayscale, and inversion.
 - Keyboard, mouse, touch, and trackpad navigation.
-- Progress, last-read location, bookmarks, and resume reading.
-- Save supported remote chapters for offline reading, with a download queue, pause/resume, retry, and clear status.
-- Download settings for destination, maximum concurrency, and sensible rate limiting.
-- Package chapters into CBZ or a documented folder format where permitted and technically supported.
-- Clearly distinguish local files, cached pages, and downloaded chapters.
-- Never imply that a file is backed up or synced unless the operation actually succeeded.
+- Configurable tap zones and shortcuts; visible keyboard focus and accessible control names.
+- Hide UI for immersive reading; restore it without resetting position.
+- Bookmark a page and resume exactly where reading stopped.
+- Keep progress through app restart and recover safely after errors.
+- Preload nearby pages with a small bounded queue; stop unused requests when the user jumps chapters.
+- Avoid decoding too many huge images at once; respect memory limits and provide retry for failed images.
+- Reduce motion when requested by the operating system or app setting.
 
-## Library and personal organization
+## 5. Downloads and offline reading
 
+- Per-chapter and multi-chapter downloads.
+- Select chapters by range, volume, branch, unread status, or manual selection when source metadata supports it.
+- Visible queue with queued/downloading/paused/completed/failed/cancelled states.
+- Pause, resume, cancel, retry, and remove completed downloads.
+- Progress, bytes or pages completed, estimated time remaining when meaningful, and clear failure messages.
+- Bounded parallelism and per-source rate limits; handle 429/rate-limit responses without aggressive retry loops.
+- Download to a managed SORYVYN library folder, with a configurable location.
+- Verify file/page completion before labeling a chapter as available offline.
+- Resume or reconcile interrupted work after a restart.
+- Store source/title/chapter metadata so offline chapters remain understandable if a source disappears.
+- Export compatible downloaded chapters to a user-readable archive/folder format where permitted.
+- Treat source terms and user rights as the gate for retaining material; do not defeat source restrictions.
+- No external browser downloads or arbitrary executable downloads in the online catalogue.
+
+## 6. Local library and import
+
+Online discovery remains manga-family only. Local imports are a separate user-controlled library capability.
+
+- Import image folders and supported manga archives, prioritizing CBZ/CBR/ZIP and a documented folder format.
+- Optional local PDF/EPUB support may be included only after a dedicated reader implementation is tested; these formats must not appear as online source categories.
+- Add files/folders through a native picker and drag-and-drop.
+- Show cover, title, reading progress, file path/location, and local/remote status.
+- Deduplicate by stable metadata and file hash when possible, without deleting user files automatically.
+- Allow local title/cover/tag corrections and collection organization.
+- Detect moved/missing files and provide a relink option.
+- Never extract archives without path-traversal protection and file-size limits.
+- Treat images, archives, metadata, and descriptions as untrusted input.
+
+## 7. Library, history, and organization
+
+- Continue Reading and Recently Added shelves.
+- History with resume positions and clear-history controls.
 - Favorites and user-created collections.
-- Reading history and continue-reading shelf.
-- Bookmarks with chapter/page position and optional notes.
-- Reading status such as unread, reading, completed, and paused.
-- Duplicate detection based on available metadata and file hashes.
-- Local metadata editing for title, author, cover, tags, and description.
-- Import/export of library metadata and reading progress using a documented backup format.
-- Optional incognito reading that does not add the session to normal history.
-- App lock may be added later, using platform security APIs rather than storing a plain-text password.
+- Bookmarks with chapter/page location and optional notes.
+- Reading states such as unread, reading, completed, and paused.
+- User-defined tags and local metadata overrides.
+- Search and filters across the user's own library.
+- Optional incognito reading that does not add the session to normal history; do not promise privacy guarantees the implementation does not provide.
+- Reading statistics and reading-time estimates can be added after the core progress model is stable.
 
-## Updates and tracking integrations
+## 8. Updates, recommendations, and integrations
 
-- Chapter-update feed for sources that expose reliable update metadata.
-- Optional notifications, disabled by default until configured.
-- Recommendations based on user-selected genres or reading history only when the user enables them.
-- Tracking integrations may be added through separate opt-in modules; never upload library contents or reading history without explicit consent.
-- Sync is a later, optional feature. It must have clear account, encryption, conflict-resolution, export, and deletion behavior.
+- An updates feed for enabled sources that expose reliable chapter-update data.
+- Notifications are opt-in and have per-source controls.
+- Recommendations may use selected tags or reading history only when enabled by the user.
+- Related titles and source alternatives must always use the category allowlist and content-suitability filter.
+- Optional tracking integrations (for example, third-party reading lists) are separate modules and require explicit opt-in.
+- Optional sync is a later milestone. Define authentication, encryption, conflict behavior, data export, account removal, and server availability before shipping it.
+- Local backup/restore should be implemented before sync and should include versioned metadata for library entries, favorites, collections, history, bookmarks, reader settings, and source configuration.
+- Do not upload reading history, local files, or source session data without explicit consent.
 
-## Interface direction
+## 9. UI, layout, and interaction
 
-SORYVYN should feel like polished desktop software, not a website placed inside a window.
+SORYVYN must have an original, polished desktop identity.
 
-- Original monochrome-first visual system with carefully restrained accent states.
-- Subtle glass-like surfaces, clear contrast, smooth but brief transitions, and consistent spacing.
-- No emoji used as application icons; use a consistent vector icon set.
-- No text overlaps, overprinted labels, clipped controls, or buttons with unclear actions.
-- Responsive layout for narrow and wide windows; browser tabs and reader controls remain usable when resized.
-- Full keyboard accessibility, visible focus states, reduced-motion support, scalable text, and readable error messages.
-- Dark and light themes, with system-theme support.
-- Empty states should be useful and explain how to import a local file or enable a source.
+- Main navigation: **Discover, Library, Updates, Downloads, History, Favorites, Bookmarks, Settings**. Allow sensible customization later.
+- Discover uses catalogue/search surfaces, never a generic browser homepage.
+- Responsive layout for narrow and wide windows; support desktop keyboard usage.
+- Monochrome-first visual language, restrained accents, clear hierarchy, consistent spacing, and original vector icons.
+- Subtle glass-like surfaces and short transitions may be used, but readability and performance win over effects.
+- No emoji icons, fake controls, text-over-text buttons, clipped labels, accidental overlines, or ambiguous hover-only actions.
+- Every interactive element has a focus state, keyboard operation, accessible name, and reduced-motion behavior.
+- Dark theme, light theme, and system-theme option.
+- No layout shifts that unexpectedly change the reading position.
+- Loading, empty, partial, unavailable, offline, and error states must have deliberate designs and clear next actions.
+- Do not invent source logos or use third-party artwork as SORYVYN's own branding.
 
-## Suggested architecture
+## 10. Suggested architecture
 
-Start with a modular desktop application targeting Windows first, while keeping cross-platform support in mind.
+Target Windows desktop first while keeping platform boundaries clean.
 
-- **UI:** TypeScript + a component-based UI framework.
-- **Desktop host:** Tauri 2 with Rust commands and explicit capability permissions.
-- **Persistence:** SQLite for metadata, history, bookmarks, settings, and task state.
-- **Files:** local filesystem for source files, downloads, covers, and cache; store references and metadata in SQLite.
-- **Browser:** isolated browser module using the platform webview behind a navigation/session API.
-- **Source engine:** a separate adapter runtime with timeouts, rate limits, cancellation, logging redaction, and schema validation.
-- **Reader engine:** format-specific readers behind a common page/navigation interface.
-- **Background work:** bounded task queue for source searches, metadata refreshes, and downloads.
-- **Tests:** unit tests for adapters and storage; fixtures for parsing; end-to-end tests for import, search, reading progress, download cancellation, and offline reading.
+- **UI:** TypeScript with a component-based framework.
+- **Desktop host:** Tauri 2 and Rust, using narrow command permissions and platform-native file dialogs.
+- **Database:** SQLite for source metadata, title metadata, chapters, progress, favorites, collections, bookmarks, source settings, and task state.
+- **Filesystem:** managed library/download folders and cache for covers/page images; store file references and integrity metadata in SQLite.
+- **Source engine:** isolated adapter interface and registry; no source scraping in UI components.
+- **Network layer:** configurable per-source client sessions, cookie isolation, timeouts, cancellation, rate limiting, and redacted diagnostics.
+- **Reader engine:** common page/chapter navigation contract with image decoding and different reading-mode implementations.
+- **Download queue:** persistent task state and bounded workers; recover after restart.
+- **Source-scoped web runtime:** separate from the main app UI and restricted to the selected source.
+- **Tests:** unit tests for models, filtering, storage, adapter parsing, cache and queue logic; integration tests for import, search, page loading, chapter download, progress recovery, and offline reading.
 
-Keep these layers independent: UI, browser, source connectors, reader, library, downloads, settings, and backup. The UI must not scrape websites directly.
+Keep these boundaries independent: catalogue UI, source registry, adapters, source-session web view, title details, reader, local library, download queue, history, backups, and optional integrations.
 
-## Implementation order
+## 11. Data model
 
-### Phase 1 — usable local reader
-1. Build the application shell, navigation, theme system, settings, and error/empty states.
-2. Implement local library import and EPUB/PDF/CBZ viewing.
-3. Persist progress, bookmarks, and collections locally.
-4. Add automated tests for import, navigation, and progress restoration.
+At minimum, model:
 
-### Phase 2 — browser foundation
-1. Add tabs, navigation controls, address/search field, downloads, and site-data controls.
-2. Add per-site session storage, private browsing, and clear history/cache actions.
-3. Add direct URL import into the reader for supported file types.
-4. Verify browser behavior on each supported operating system.
+- **Source:** ID, title, domain/mirrors, locale, allowed category, capabilities, connector version, enabled/pinned state, health status, settings, and last successful check.
+- **Title:** stable source-scoped ID, title, alternate titles, description, cover URLs/cache key, author/artist, tags, status, category, rating metadata, source ID, canonical public URL, and update time.
+- **Chapter:** source-scoped ID, title, chapter/volume number, language/branch, group/scanlator when available, upload date, URL, and download state.
+- **Page:** stable chapter-scoped ID/order, image URL, preview URL when available, cache key, download state, and dimensions when known.
+- **Library state:** reading status, last chapter/page, progress, favorite/collection memberships, bookmarks, reader mode, overrides, and last-read time.
+- **Background task:** task ID, source/title/chapter IDs, state, progress, retry count, timestamps, and safe diagnostic code.
 
-### Phase 3 — source catalogue
-1. Define and document the source-adapter contract.
-2. Add a source directory and source settings UI.
-3. Implement unified search, normalized results, timeouts, and per-source failure handling.
-4. Add chapter/page loading and offline downloads for compatible sources.
-5. Add alternate-source suggestions and source health reporting.
+Validate metadata before it reaches the UI or database. Persist only the fields necessary for app behavior. IDs from different sources must never collide.
+
+## 12. Implementation plan
+
+### Phase 0 — repository and design foundation
+1. Define the app architecture, build workflow, design tokens, icon rules, and supported operating system.
+2. Create the navigation shell and responsive component system.
+3. Define the data model, migration policy, source adapter contract, and test fixtures.
+4. Implement the **Manga/Manhwa/Manhua-only allowlist** as a central policy with automated tests before adding sources.
+
+### Phase 1 — local reader and library
+1. Import CBZ/CBR/ZIP and folders.
+2. Build single-page, double-page, right-to-left, left-to-right, and vertical reader modes.
+3. Persist progress, bookmarks, favorites, collections, and reader settings.
+4. Add backup/export of local metadata.
+
+### Phase 2 — source engine and catalogue
+1. Implement source registry and per-source settings.
+2. Add a small number of well-tested, general-audience-compatible source adapters.
+3. Add source grid, category/language filters, title details, and chapter lists.
+4. Implement multi-source search with progressive results, rate limiting, cancellation, and partial failures.
+5. Enforce category/rating policy in the adapter layer, result normalization, database query, recommendations, updates, and final UI projection.
+
+### Phase 3 — remote reading and downloads
+1. Load chapter page manifests and images.
+2. Implement cache, bounded prefetch, per-source headers/session handling, and retry states.
+3. Add persistent downloads with pause/resume/cancel/retry and offline chapter access.
+4. Implement source-specific interactive sessions only when required and keep them domain-restricted.
 
 ### Phase 4 — refinement
-1. Add update feeds and opt-in notifications.
-2. Add backup and restore, duplicate management, accessibility review, and performance profiling.
-3. Evaluate tracking and optional sync integrations.
-4. Build signed release packages and publish reproducible build instructions.
+1. Add updates, opt-in notifications, recommendations, and alternative sources.
+2. Add import/export, backup/restore, duplicate detection, and diagnostics.
+3. Evaluate optional third-party tracking and sync integrations.
+4. Add signed installers, release notes, crash reporting with redaction, accessibility checks, and reproducible builds.
 
-## Engineering requirements
+## 13. Definition of done
 
-- No fake controls: every visible control must work or be explicitly marked as not yet available.
-- Never swallow errors silently; display recoverable errors and write redacted diagnostic logs.
-- Use cancellation for browser navigation, search, refresh, and downloads.
-- Avoid unbounded parallel requests to source websites.
-- Don't store credentials or session tokens in logs or exports.
-- Use content security policies and restrictive native command permissions.
-- Validate URLs and paths; prevent path traversal during archive extraction.
-- Treat all downloaded pages, covers, metadata, and archives as untrusted input.
-- Keep the app responsive while parsing large books or downloading multiple chapters.
-- Include tests, setup instructions, supported-format notes, and known limitations with each release.
-- Do not claim source compatibility until a connector has passing tests and a documented maintenance status.
+SORYVYN is not ready to call its browser complete until all of these are verified:
 
-## Licensing and attribution
+1. Discover displays only Manga, Manhwa, and Manhua categories.
+2. Unapproved source types and adult/explicit-rated items are not shown by search, recommendations, updates, related titles, alternate sources, or cached feeds.
+3. No general URL bar, unrestricted website tabs, general search-engine results, or arbitrary-site browsing exists in the main Discover flow.
+4. Search returns progressive grouped results; failures from one source do not block successful sources.
+5. Source-specific filters are shown only when supported and produce correct results.
+6. Selecting a title opens details and chapters for that exact title/source.
+7. Reader modes navigate pages and chapters correctly and restore reading progress after restart.
+8. A chapter is marked offline only after its required pages are verified.
+9. Downloads can be paused, resumed, cancelled, retried, and recovered after restart.
+10. A source-scoped interactive session cannot turn into unrestricted browsing and never silently bypasses access controls.
+11. Local imports cannot escape the chosen folder through a malicious archive path.
+12. Backup/restore validates format versions and reports incomplete restores clearly.
+13. The application remains usable with keyboard navigation, narrow windows, low-memory conditions, and reduced motion.
 
-Kotatsu and its parser library are published under GPL-3.0, and the original Kotatsu repository is archived. This specification is for **feature parity, not a request to copy its branding or source files**. If any GPL-licensed code or parser library is reused, review the license obligations before distributing SORYVYN and provide the required license notices and corresponding source code. Prefer a clean, independently implemented adapter contract unless the project deliberately adopts compatible licensing.
+## Licensing and reference notes
 
-Online-source availability and download permission vary by site and jurisdiction. SORYVYN should remain a reading and browsing tool, respect source terms and access controls, and provide a way to remove a source or local download.
+The reviewed Kotatsu application and its parser library are GPL-3.0 projects. The upstream organization and repositories are archived, so upstream source compatibility and future maintenance cannot be assumed. This specification is for capability research, not a request to copy their branding, UI, or source files.
 
-## Definition of done for the browser
+Before incorporating GPL-licensed implementation code or the parser library into a distributed SORYVYN build, decide whether the distribution will comply with applicable GPL requirements and provide the required corresponding source and notices. If that is not the intended licensing model, use an independently written adapter interface and implementations; review legal obligations before distribution.
 
-The browser milestone is not complete until these scenarios work:
-
-1. User enters a URL, navigates, returns, reloads, opens a second tab, and closes/restores a session.
-2. User downloads a supported file and can inspect, cancel, retry, or open it.
-3. User opens supported remote content in the appropriate SORYVYN reader.
-4. User can clear a single site's data and all persisted browser data.
-5. A failed source times out cleanly without blocking healthy sources.
-6. Unified search shows partial results while marking failed sources clearly.
-7. A private session leaves no persisted history or site data after it closes.
-8. A source connector cannot access secrets or arbitrary local files through the normal adapter API.
-9. Download tasks can be paused/cancelled and recovered safely after application restart.
-10. The interface remains usable at small window sizes, with keyboard navigation and reduced motion enabled.
+Source availability, source terms, and permission to download content differ by website. SORYVYN should respect source access rules and make the source and origin of each result visible.
