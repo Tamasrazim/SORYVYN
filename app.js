@@ -544,6 +544,14 @@
   }
 
   function renderBookPageContent(pageNumber, item){
+    if(item.localImport){
+      const src=item.pageUrls && item.pageUrls[pageNumber-1];
+      const filename=item.pageNames && item.pageNames[pageNumber-1] || ("Page "+pageNumber);
+      return '<div class="imported-page-inner">'+(src
+        ? '<img class="imported-page-image" src="'+escapeHTML(src)+'" alt="'+escapeHTML(filename)+'" draggable="false">'
+        : '<div class="imported-page-loading">Local page unavailable</div>')+
+        '<span class="imported-page-number">'+String(pageNumber).padStart(2,"0")+' / '+String(pageCountFor(item)).padStart(2,"0")+'</span></div>';
+    }
     const layout = ["layout-a","layout-b","layout-c","layout-d"][(pageNumber - 1) % 4];
     const heading = item.title.split(" ").slice(0,5).join(" ");
     let panels = "";
