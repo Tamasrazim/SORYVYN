@@ -225,6 +225,12 @@
         if(knownTitle && Number.isInteger(value) && value >= 1 && value <= pageCountFor(knownTitle)) progress[id]=value;
       }
     }
+    const bookmarks = Array.isArray(incoming.bookmarks)
+      ? [...new Set(incoming.bookmarks.filter(key=>{
+          const entry=parseBookmarkKey(key);
+          return entry && knownTitles.has(entry.item.id);
+        }))]
+      : [];
     const knownGenres = new Set(["all",...new Set(titles.flatMap(item=>[item.genre,...item.tags]))]);
     return {
       savedIds:uniqueKnown(incoming.savedIds,knownTitles),
