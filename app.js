@@ -391,9 +391,9 @@
     }
   });
 
-  $$(".category-chip").forEach(button=>button.addEventListener("click",()=>{
+  $(".category-chip").forEach(button=>button.addEventListener("click",()=>{
     state.category=button.dataset.category;
-    if(state.category!=="All")$("#filterCategory").value=state.category;
+    $("#filterCategory").value=state.category;
     renderDiscover();
   }));
   $("#globalSearch").addEventListener("input",event=>{titleQuery=event.target.value;renderDiscover();});
