@@ -871,6 +871,12 @@
   });
   $("#librarySearch").addEventListener("input",event=>{libraryQuery=event.target.value;renderLibrary();});
   $("#exportBackupButton").addEventListener("click",exportBackup);
+  $("#importImagesButton").addEventListener("click",()=>$("#importImagesFile").click());
+  $("#importImagesFile").addEventListener("change",event=>{
+    const files=event.target.files;
+    event.target.value="";
+    importImageFolder(files);
+  });
   $("#importBackupButton").addEventListener("click",()=>$("#importBackupFile").click());
   $("#importBackupFile").addEventListener("change",event=>{
     const file=event.target.files && event.target.files[0];
@@ -934,6 +940,7 @@
   $("#footerYear").textContent=new Date().getFullYear();
   if(state.noticeDismissed)$("#dismissNotice").closest(".demo-notice").remove();
   renderTheme();renderCounters();renderMiniSources();renderDiscover();renderRail();renderSources();
+  restoreLocalImports();
   const initialRoute=location.hash.replace("#","").trim();
   if(initialRoute)changeRoute(initialRoute);
   if("serviceWorker" in navigator && (location.protocol==="https:"||location.hostname==="localhost")){
