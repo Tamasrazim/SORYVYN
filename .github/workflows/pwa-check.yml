@@ -61,6 +61,7 @@ jobs:
           assert.match(js, /function normalizeBackupState\(/, 'Backup import validation is missing');
           assert.match(js, /function exportBackup\(/, 'Backup export is missing');
           assert.match(js, /function pageCountFor\(/, 'Reader should support dynamic page counts');
+          assert.match(js, /function loadLocalPages\(/, 'Local image pages must be loaded from IndexedDB');
           assert.match(html, /data-page="sources"/, 'Source browser route is missing');
           assert.match(html, /id="bookSpread"/, 'Two-page book spread is missing');
           assert.match(html, /id="leftBookPage"/, 'Left book page is missing');
