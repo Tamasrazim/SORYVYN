@@ -13,6 +13,9 @@ Deliverables:
 - Four clearly labelled illustrative source profiles, enable/disable controls, language filter, and internal Discover / Trending / Recently Added views.
 - Title detail modal; local reader preview with page, webtoon, and right-to-left demo modes.
 - Local demo library, favorites, reading history and progress stored in browser storage.
+- Immersive 3D open-book reader preview showing two facing pages, a visible spine and page-stack edges.
+- Drag a page with mouse/touch to fold it across the spine, use mouse-wheel scrolling, keyboard arrows, edge controls or Previous/Next spread buttons.
+- Page-turn animation shows the current page's reverse side before revealing the next spread, with reduced-motion fallback.
 - Light/dark theme, keyboard shortcuts, responsive navigation and reduced-motion support.
 - Installable PWA manifest, local SVG icon, service worker and cached application shell.
 - UI labels make the demo state clear: no real source has been connected in this chunk.
