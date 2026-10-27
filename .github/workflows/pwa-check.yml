@@ -1,0 +1,68 @@
+name: SORYVYN PWA checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: node --check app.js
+
+      - name: Validate PWA assets and catalogue scope
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+
+          const required = [
+            'index.html',
+            'app.css',
+            'app.js',
+            'manifest.webmanifest',
+            'sw.js',
+            'icon.svg'
+          ];
+          for (const file of required) {
+            assert.ok(fs.existsSync(file), `Missing PWA asset: ${file}`);
+          }
+
+          const html = fs.readFileSync('index.html', 'utf8');
+          const css = fs.readFileSync('app.css', 'utf8');
+          const js = fs.readFileSync('app.js', 'utf8');
+          const sw = fs.readFileSync('sw.js', 'utf8');
+          const manifest = JSON.parse(fs.readFileSync('manifest.webmanifest', 'utf8'));
+
+          assert.match(html, /rel="manifest"/, 'HTML must link the PWA manifest');
+          assert.match(html, /id="sourceCatalogue"/, 'Source catalogue mount point is missing');
+          assert.match(html, /data-page="sources"/, 'Source browser route is missing');
+          assert.equal(manifest.display, 'standalone', 'PWA should install in standalone mode');
+          assert.ok(manifest.icons?.length, 'PWA icon is required');
+          assert.match(sw, /addAll\(APP_SHELL\)/, 'Service worker must precache the app shell');
+          assert.doesNotMatch(css, /@import\s+url\(/i, 'PWA styles must not depend on remote font imports');
+          assert.doesNotMatch(js, /window\.location\s*=|location\.href\s*=/, 'Do not implement unrestricted external navigation');
+
+          const categories = [...js.matchAll(/\{id:"[^"]+",title:"[^"]+",category:"([^"]+)"/g)].map(match => match[1]);
+          const allowed = new Set(['Manga', 'Manhwa', 'Manhua']);
+          assert.equal(categories.length, 8, `Expected eight sample titles, found ${categories.length}`);
+          assert.ok(categories.every(category => allowed.has(category)), 'Online sample catalogue contains a disallowed category');
+          assert.match(js, /No source websites are fetched in this milestone/);
+
+          console.log('PWA smoke checks passed. Sample categories:', [...new Set(categories)].join(', '));
+          NODE
