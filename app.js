@@ -55,8 +55,13 @@
   let embeddedHistory = ["discover"];
   let embeddedHistoryIndex = 0;
   let currentTitleId = null;
-  let readerPage = 1;
-  let readerMode = "page";
+  let readerSpread = 0;
+  const TOTAL_PAGES = 8;
+  const TOTAL_SPREADS = Math.ceil(TOTAL_PAGES / 2);
+  let isPageTurning = false;
+  let activeFlip = null;
+  let pointerDrag = null;
+  let wheelLockUntil = 0;
   let installPrompt = null;
   let titleQuery = "";
   let libraryQuery = "";
