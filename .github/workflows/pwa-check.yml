@@ -56,6 +56,7 @@ jobs:
           assert.match(html, /id="importBackupButton"/, 'Local backup import control is missing');
           assert.match(html, /id="importBackupFile"/, 'Backup file picker is missing');
           assert.match(html, /id="importImagesButton"/, 'Local image-folder import control is missing');
+          assert.match(html, /id="importImagesFile"/, 'Local image-folder file picker is missing');
           assert.match(js, /function normalizeBackupState\(/, 'Backup import validation is missing');
           assert.match(js, /function exportBackup\(/, 'Backup export is missing');
           assert.match(html, /data-page="sources"/, 'Source browser route is missing');
