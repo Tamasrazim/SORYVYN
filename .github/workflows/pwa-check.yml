@@ -37,7 +37,8 @@ jobs:
             'app.js',
             'manifest.webmanifest',
             'sw.js',
-            'icon.svg'
+            'icon.svg',
+            'privacy.html'
           ];
           for (const file of required) {
             assert.ok(fs.existsSync(file), `Missing PWA asset: ${file}`);
