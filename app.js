@@ -567,6 +567,8 @@
   function setBookPage(element, pageNumber, item, side){
     element.className = "book-page " + side;
     element.dataset.page = String(pageNumber);
+    if(pageNumber>pageCountFor(item)){element.classList.add("blank-page");element.innerHTML="";return;}
+    element.classList.remove("blank-page");
     element.innerHTML = renderBookPageContent(pageNumber,item);
   }
 
@@ -574,7 +576,7 @@
     const item = titleById(currentTitleId);
     if(!item) return;
     const leftPage = readerSpread * 2 + 1;
-    const rightPage = Math.min(TOTAL_PAGES,leftPage + 1);
+    const rightPage = leftPage + 1;
     setBookPage($("#leftBookPage"),leftPage,item,"left");
     setBookPage($("#rightBookPage"),rightPage,item,"right");
     $("#bookSpread").querySelectorAll(".book-flip-sheet").forEach(sheet=>sheet.remove());
