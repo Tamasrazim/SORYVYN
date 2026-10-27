@@ -172,6 +172,7 @@
         favoriteIds:Array.isArray(parsed.favoriteIds)?parsed.favoriteIds:[],
         history:Array.isArray(parsed.history)?parsed.history:[],
         progress:parsed.progress && typeof parsed.progress === "object"?parsed.progress:{},
+        bookmarks:Array.isArray(parsed.bookmarks)?parsed.bookmarks.filter(key=>typeof key==="string"):[],
         enabledSources:Array.isArray(parsed.enabledSources)?parsed.enabledSources:defaultState.enabledSources.slice()
       };
     } catch (_) {
