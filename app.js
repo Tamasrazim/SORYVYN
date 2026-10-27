@@ -322,7 +322,7 @@
   }
 
   function moveReader(direction){
-    if(readerMode==="rtl")direction*=-1;
+    // RTL changes the intended reading direction in a real page engine; the preview controls still advance predictably.
     const next=readerPage+direction;
     if(next<1){toast("You're at the beginning of this preview.");return;}
     if(next>8){state.progress[currentTitleId]=8;persist();closeModal($("#readerModal"));toast("Preview complete. Your progress was saved locally.");renderDiscover();renderRail();return;}
