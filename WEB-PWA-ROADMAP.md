@@ -54,3 +54,10 @@ Run functional, accessibility, responsive, browser-storage, offline, PWA install
 ## Current boundary
 
 Chunk 01 is a functional front-end prototype with local sample data, not a live manga source aggregator. The source-browser panel resembles an embedded browser, but its navigation remains inside SORYVYN's own source catalogue. Chunks 02–07 are not implemented yet. No claims of real source availability, live chapter updates, or actual chapter downloads should be made before those components exist.
+
+## Web deployment progress
+
+- A GitHub Actions workflow now validates the application script, packages the static PWA assets, and deploys them to GitHub Pages whenever `main` changes or the workflow is started manually.
+- The deployment workflow uses the repository's GitHub Pages environment. If the first run reports that Pages is not enabled or configured for Actions, set **Repository Settings → Pages → Build and deployment → Source → GitHub Actions**, then rerun the workflow.
+- Intended public URL: https://tamasrazim.github.io/SORYVYN/ (available after a successful deployment).
+- `privacy.html` documents the current local-only preview behavior and is included in the offline app shell.
