@@ -439,6 +439,20 @@
     renderGridInto("#favoritesGrid",items,"#favoritesEmpty");
   }
 
+  function renderBookmarks(){
+    const entries=state.bookmarks.map(parseBookmarkKey).filter(Boolean).sort((a,b)=>
+      a.item.title.localeCompare(b.item.title) || a.spread-b.spread
+    );
+    $("#bookmarkCount").textContent=String(entries.length).padStart(2,"0");
+    $("#bookmarksEmpty").hidden=entries.length!==0;
+    $("#bookmarksList").innerHTML=entries.map(entry=>{
+      const first=entry.spread*2+1;
+      const last=Math.min(pageCountFor(entry.item),first+1);
+      const range=String(first).padStart(2,"0")+"–"+String(last).padStart(2,"0");
+      return '<article class="bookmark-row"><div class="bookmark-row-mark">S</div><div class="bookmark-row-main"><strong>'+escapeHTML(entry.item.title)+'</strong><small>'+escapeHTML(entry.item.category.toUpperCase())+' · PAGES '+range+'</small></div><div class="bookmark-row-actions"><button class="secondary-button" type="button" data-open-bookmark="'+escapeHTML(entry.key)+'">Open spread</button><button class="secondary-button" type="button" data-unbookmark="'+escapeHTML(entry.key)+'">Remove</button></div></article>';
+    }).join("");
+  }
+
   function renderCounters(){
     $("#libraryCount").textContent=String(state.savedIds.length).padStart(2,"0");
     $("#downloadCount").textContent="00";
