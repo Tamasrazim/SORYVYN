@@ -157,7 +157,7 @@
   }
 
   const defaultState = {
-    savedIds:[], favoriteIds:[], history:[], progress:{}, enabledSources:["northstar","moon","silk","inkhouse"],
+    savedIds:[], favoriteIds:[], history:[], progress:{}, bookmarks:[], enabledSources:["northstar","moon","silk","inkhouse"],
     category:"All",genre:"all",status:"all",theme:"dark",noticeDismissed:false
   };
 
