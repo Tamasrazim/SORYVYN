@@ -33,6 +33,7 @@
         <button class="nav-item" data-route="sources"><span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.7 12h16.6M12 3.5a13.7 13.7 0 0 1 0 17M12 3.5a13.7 13.7 0 0 0 0 17"/></svg></span><span>Source browser</span><span class="live-dot" title="Demo mode"></span></button>
         <button class="nav-item" data-route="history"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 11a8 8 0 1 1 2.2 5.5"/><path d="M4 5v6h6M12 7v5l3 2"/></svg></span><span>Reading history</span></button>
         <button class="nav-item" data-route="favorites"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20.5 8.5c0 5-8.5 10-8.5 10s-8.5-5-8.5-10A4.5 4.5 0 0 1 12 6.7 4.5 4.5 0 0 1 20.5 8.5Z"/></svg></span><span>Favorites</span></button>
+        <button class="nav-item" data-route="bookmarks"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4z"/></svg></span><span>Bookmarks</span><span class="nav-count" id="bookmarkCount">00</span></button>
       </nav>
 
       <div class="sidebar-bottom">
@@ -163,6 +164,12 @@
           <div class="page-heading"><div class="eyebrow">THE ONES YOU LOVE</div><h1>Favorites<span class="heading-period">.</span></h1><p>A short list of stories you want to keep close.</p></div>
           <div class="title-grid" id="favoritesGrid"></div><div class="empty-state" id="favoritesEmpty"><div class="empty-symbol">♡</div><h2>Make room for a favorite.</h2><p>Tap the bookmark on any title card to save it here.</p><button class="secondary-button" data-route="discover">Explore titles</button></div>
         </section>
+
+        <section class="page generic-page" data-page="bookmarks" hidden>
+          <div class="page-heading"><div class="eyebrow">SAVED PAGE POSITIONS</div><h1>Bookmarks<span class="heading-period">.</span></h1><p>Jump directly back to a saved spread in any sample story or local image edition.</p></div>
+          <div id="bookmarksList" class="bookmark-list"></div>
+          <div class="empty-state" id="bookmarksEmpty" hidden><div class="empty-symbol">▤</div><h2>No bookmarks yet.</h2><p>Open a book and bookmark its current spread to find it here.</p><button class="secondary-button" data-route="discover">Explore titles</button></div>
+        </section>
       </div>
     </main>
 
@@ -216,7 +223,7 @@
     </div>
     <div class="reader-controls">
       <button class="secondary-button reader-nav-button" id="readerPrev" type="button"><span aria-hidden="true">←</span> Previous spread</button>
-      <div class="reader-progress"><span id="readerProgressLabel">TURN THE PAGE · KEEP THE STORY MOVING</span><div class="reader-progress-track"><span id="readerProgressFill"></span></div><small>DRAG · WHEEL · ARROW KEYS</small></div>
+      <div class="reader-progress"><span id="readerProgressLabel">TURN THE PAGE · KEEP THE STORY MOVING</span><div class="reader-progress-track"><span id="readerProgressFill"></span></div><div class="reader-progress-bottom"><small>DRAG · WHEEL · ARROW KEYS</small><button class="secondary-button reader-bookmark-button" id="readerBookmark" type="button" aria-pressed="false">Bookmark spread</button></div></div>
       <button class="primary-button reader-nav-button" id="readerNext" type="button">Next spread <span aria-hidden="true">→</span></button>
     </div>
     <div class="reader-demo-note">SORYVYN OPEN-BOOK PREVIEW · ORIGINAL SAMPLE PANELS · PAGE TURNING IS INTERACTIVE</div>
