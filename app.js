@@ -25,6 +25,105 @@
     {id:"silk",name:"Silk Panel",symbol:"S",language:"zh",languageLabel:"Chinese",categories:["Manhua"],description:"A mock source profile for Chinese manhua discovery.",count:613,health:"Demo connector"},
     {id:"inkhouse",name:"Inkhouse Mirror",symbol:"I",language:"en",languageLabel:"English",categories:["Manga","Manhwa","Manhua"],description:"A fictional multi-category source used to test filtering and layout.",count:2078,health:"Demo connector"}
   ];
+  const localImportedTitles = [];
+  const importedPageUrls = new Map();
+  let localLibraryDBPromise = null;
+  function openLocalLibraryDB(){
+    if(!("indexedDB" in window)) return Promise.reject(new Error("IndexedDB is not available."));
+    if(localLibraryDBPromise) return localLibraryDBPromise;
+    localLibraryDBPromise = new Promise((resolve,reject)=>{
+      const request=indexedDB.open("soryvyn-local-library",1);
+      request.onupgradeneeded=()=>{
+        const db=request.result;
+        if(!db.objectStoreNames.contains("titles")) db.createObjectStore("titles",{keyPath:"id"});
+        if(!db.objectStoreNames.contains("pages")) db.createObjectStore("pages",{keyPath:"key"});
+      };
+      request.onsuccess=()=>resolve(request.result);
+      request.onerror=()=>{localLibraryDBPromise=null;reject(request.error);};
+    });
+    return localLibraryDBPromise;
+  }
+  function idbRequest(request){
+    return new Promise((resolve,reject)=>{
+      request.onsuccess=()=>resolve(request.result);
+      request.onerror=()=>reject(request.error);
+    });
+  }
+  function idbDone(tx){
+    return new Promise((resolve,reject)=>{
+      tx.oncomplete=resolve;
+      tx.onabort=()=>reject(tx.error || new Error("Local import was cancelled."));
+      tx.onerror=()=>reject(tx.error || new Error("Local storage failed."));
+    });
+  }
+  function localPageKey(id,page){return id+"|"+String(page).padStart(5,"0");}
+  function pageCountFor(item){return item && item.localImport ? item.pageCount : TOTAL_PAGES;}
+  function spreadCountFor(item){return Math.ceil(pageCountFor(item)/2);}
+  function allKnownTitles(){return [...titles,...localImportedTitles];}
+  async function localPageUrl(item,page){
+    const key=item.id+"|"+page;
+    if(importedPageUrls.has(key)) return importedPageUrls.get(key);
+    const db=await openLocalLibraryDB();
+    const tx=db.transaction("pages","readonly");
+    const record=await idbRequest(tx.objectStore("pages").get(localPageKey(item.id,page)));
+    if(!record || !record.blob) throw new Error("A saved image page is missing.");
+    const url=URL.createObjectURL(record.blob);
+    importedPageUrls.set(key,url);
+    return url;
+  }
+  async function loadLocalPages(item){
+    const db=await openLocalLibraryDB();
+    const tx=db.transaction("pages","readonly");
+    const store=tx.objectStore("pages");
+    const records=await Promise.all(Array.from({length:item.pageCount},(_,i)=>idbRequest(store.get(localPageKey(item.id,i+1)))));
+    if(records.some(record=>!record || !record.blob)) throw new Error("One or more saved image pages are missing.");
+    item.pageUrls=records.map((record,i)=>{
+      const key=item.id+"|"+(i+1);
+      if(importedPageUrls.has(key)) return importedPageUrls.get(key);
+      const url=URL.createObjectURL(record.blob);importedPageUrls.set(key,url);return url;
+    });
+    item.coverUrl=item.pageUrls[0] || "";
+  }
+  async function restoreLocalImports(){
+    try{
+      const db=await openLocalLibraryDB();
+      const tx=db.transaction("titles","readonly");
+      const records=await idbRequest(tx.objectStore("titles").getAll());
+      for(const record of records){
+        if(!record || !String(record.id).startsWith("local-") || !Number.isInteger(record.pageCount) || record.pageCount<1) continue;
+        if(localImportedTitles.some(item=>item.id===record.id)) continue;
+        const item={...record,localImport:true,pageUrls:null,coverUrl:""};
+        localImportedTitles.push(item);
+        try{item.coverUrl=await localPageUrl(item,1);}catch(_){}
+      }
+      renderCounters();renderLibrary();renderHistory();renderFavorites();renderRail();
+    }catch(error){toast("Local image library unavailable: "+(error.message || "storage error."));}
+  }
+  async function importImageFolder(fileList){
+    const images=Array.from(fileList || []).filter(file=>
+      (file.type || "").startsWith("image/") || /\.(png|jpe?g|webp|gif|avif|bmp|tiff?)$/i.test(file.name || "")
+    ).sort((a,b)=>(a.webkitRelativePath || a.name).localeCompare(b.webkitRelativePath || b.name,undefined,{numeric:true,sensitivity:"base"}));
+    if(!images.length){toast("No image pages found in that folder.");return;}
+    if(images.length>300){toast("Import limited to 300 pages per folder.");return;}
+    const bytes=images.reduce((sum,file)=>sum+file.size,0);
+    if(bytes>200*1024*1024 || images.some(file=>file.size>30*1024*1024)){toast("Folder exceeds the 200 MB import or 30 MB per-page limit.");return;}
+    const first=images[0].webkitRelativePath || images[0].name;
+    const suggestion=first.includes("/")?first.split("/")[0]:first.replace(/\.[^.]+$/,"");
+    const entered=window.prompt("Name this local manga or chapter:",suggestion || "My manga");
+    if(entered===null)return;
+    const name=entered.trim().slice(0,120);
+    if(!name){toast("Enter a name for this import.");return;}
+    const id="local-"+(crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+"-"+Math.random().toString(36).slice(2));
+    const item={id:id,title:name,category:"Manga",genre:"Local Import",status:"Imported",rating:0,chapters:1,updated:Date.now(),language:"Local",source:"Local library",cover:"cover-a",coverNo:"LOCAL",kicker:"LOCAL IMAGE EDITION",creator:"Imported locally",description:"Images imported from this device and saved in this browser.",tags:["Local import"],chaptersLabel:images.length+" pages",localImport:true,pageCount:images.length,pageNames:images.map(file=>file.webkitRelativePath || file.name),pageUrls:null,coverUrl:""};
+    try{
+      const db=await openLocalLibraryDB();const tx=db.transaction(["titles","pages"],"readwrite");const done=idbDone(tx);
+      const meta={...item};delete meta.pageUrls;delete meta.coverUrl;tx.objectStore("titles").put(meta);
+      images.forEach((file,i)=>tx.objectStore("pages").put({key:localPageKey(id,i+1),titleId:id,pageNumber:i+1,fileName:file.name,blob:file}));
+      await done;localImportedTitles.push(item);item.coverUrl=await localPageUrl(item,1).catch(()=>"");
+      state.savedIds=[...new Set([...state.savedIds,id])];persist();renderLibrary();renderRail();changeRoute("library");
+      toast("Imported "+images.length+" pages into My Library.");
+    }catch(error){toast("Image import failed: "+(error.message || "browser storage error."));}
+  }
   const defaultState = {
     savedIds:[], favoriteIds:[], history:[], progress:{}, enabledSources:["northstar","moon","silk","inkhouse"],
     category:"All",genre:"all",status:"all",theme:"dark",noticeDismissed:false
@@ -81,7 +180,7 @@
       throw new Error("This is not a supported SORYVYN backup file.");
     }
     const incoming = backup.state;
-    const knownTitles = new Set(titles.map(item=>item.id));
+    const knownTitles = new Set(allKnownTitles().map(item=>item.id));
     const knownSources = new Set(sourceSeed.map(item=>item.id));
     const uniqueKnown = (value,known) => Array.isArray(value)
       ? [...new Set(value.filter(id=>typeof id === "string" && known.has(id)))]
@@ -182,7 +281,7 @@
     return String(value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   }
 
-  function titleById(id){ return titles.find(item=>item.id===id); }
+  function titleById(id){ return titles.find(item=>item.id===id) || localImportedTitles.find(item=>item.id===id); }
   function sourceById(id){ return sourceSeed.find(item=>item.id===id); }
   function isSaved(id){ return state.savedIds.includes(id); }
   function isFavorite(id){ return state.favoriteIds.includes(id); }
