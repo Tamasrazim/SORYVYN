@@ -404,11 +404,11 @@
     showModal($("#readerModal"));
   }
 
-  function prepareFlip(direction){
+  function prepareFlip(direction,quiet){
     if(isPageTurning || !currentTitleId) return null;
     const targetSpread = readerSpread + direction;
     if(targetSpread < 0 || targetSpread >= TOTAL_SPREADS){
-      toast(direction > 0 ? "You've reached the end of this preview." : "You're at the beginning of this book.");
+      if(!quiet) toast(direction > 0 ? "You've reached the end of this preview." : "You're at the beginning of this book.");
       return null;
     }
     const item = titleById(currentTitleId);
@@ -494,7 +494,7 @@
       const page = event.target.closest(".book-page");
       if(!page) return;
       const direction = page.classList.contains("right") ? 1 : -1;
-      const flip = prepareFlip(direction);
+      const flip = prepareFlip(direction,true);
       if(!flip) return;
       pointerDrag = {pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,pageWidth:Math.max(1,frame.getBoundingClientRect().width/2),direction,moved:false,flip};
       try{frame.setPointerCapture(event.pointerId);}catch(_){}
