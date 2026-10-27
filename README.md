@@ -14,13 +14,13 @@ The first browser-first build is available from `index.html`. It includes the re
 
 ### Run the PWA locally
 
-The web build has no package install or build step. From the repository root, run `python -m http.server 4173` and open `http://localhost:4173`. Keep the server running to test service-worker caching and installability. PWA behavior requires `localhost` or HTTPS; opening the file directly with `file://` does not provide the full PWA lifecycle. GitHub Pages deployment is not configured by this commit.
+The web build has no package install or build step. From the repository root, run `python -m http.server 4173` and open `http://localhost:4173`. Keep the server running to test service-worker caching and installability. PWA behavior requires `localhost` or HTTPS; opening the file directly with `file://` does not provide the full PWA lifecycle. GitHub Pages deployment is wired through the repository workflow. The public URL is `https://tamasrazim.github.io/SORYVYN/` once the first deployment succeeds and GitHub Pages is enabled for this repository.
 
-## Core interpretation of the Kotatsu reference
+## Product architecture overview
 
-The Kotatsu project is more than an image viewer, but its primary browse experience is **source-driven manga discovery**: users enable content sources, search across sources, inspect manga details and chapters, then read or download chapters. Its source catalogue is distinct from its small embedded WebView used when a source needs a browser-based interactive step such as authorization or challenge handling.
+Dedicated manga readers commonly pair a source catalogue with metadata, chapter selection, reading, and local-library workflows. SORYVYN follows that product architecture with its own codebase, product identity, interface, and implementation.
 
-SORYVYN should reproduce the *capabilities and workflow concepts* that are relevant to a dedicated manga reader, using its own code, product identity, visual system, and architecture.
+Build these capabilities as original SORYVYN components. Product-category conventions do not authorize copying another project's implementation code, logos, text, or distinctive visual design.
 
 **SORYVYN's online browser is not a general-purpose internet browser.** It must only discover and display manga, manhwa, or manhua. No general search engine, arbitrary URL bar, unrelated websites, general web feed, novels, western comics, or general download browsing belongs in the main browser experience.
 
@@ -33,7 +33,7 @@ SORYVYN should reproduce the *capabilities and workflow concepts* that are relev
 5. Local imports are separate from online discovery. The user may import supported reading files, but an imported file must not cause unrelated web content to appear in the online catalogue.
 6. The source-scoped interactive web view is only a utility for a selected manga source. It is not a route into unrestricted web browsing.
 7. Never bypass DRM, paywalls, logins, age checks, source access controls, or anti-abuse mechanisms. If a site requires an interactive action that SORYVYN cannot handle, explain the limitation and let the user decide what to do.
-8. Do not copy Kotatsu's source code, logo, text, or visual design. Reuse of GPL-licensed code or its parser library requires a deliberate licensing decision and compliance review.
+8. Do not copy third-party source code, logos, text, or distinctive visual design. Each dependency or source adapter must have documented provenance and a license review before distribution.
 
 ## Product principles
 
@@ -127,7 +127,7 @@ Requirements:
 
 ## 3. Source-scoped interactive web session
 
-Kotatsu's browser utility is associated with source actions; SORYVYN should keep that narrow purpose.
+A source-scoped interactive session exists only to complete an explicitly supported action for one selected manga source. Keep this utility narrow and separate from the catalogue.
 
 - Open only from a selected source or title when that source explicitly requires an interactive step.
 - Display the source identity and the reason the session was opened.
@@ -320,10 +320,8 @@ SORYVYN is not ready to call its browser complete until all of these are verifie
 12. Backup/restore validates format versions and reports incomplete restores clearly.
 13. The application remains usable with keyboard navigation, narrow windows, low-memory conditions, and reduced motion.
 
-## Licensing and reference notes
+## Licensing and content integrity
 
-The reviewed Kotatsu application and its parser library are GPL-3.0 projects. The upstream organization and repositories are archived, so upstream source compatibility and future maintenance cannot be assumed. This specification is for capability research, not a request to copy their branding, UI, or source files.
+SORYVYN's original project code and documentation are licensed under the MIT License in [`LICENSE`](./LICENSE). That permission does not automatically apply to third-party libraries, trademarks, remote websites, manga pages, or other content that may later be integrated. Review each dependency and source's terms before distribution, provide required notices, and keep attribution with imported content where applicable.
 
-Before incorporating GPL-licensed implementation code or the parser library into a distributed SORYVYN build, decide whether the distribution will comply with applicable GPL requirements and provide the required corresponding source and notices. If that is not the intended licensing model, use an independently written adapter interface and implementations; review legal obligations before distribution.
-
-Source availability, source terms, and permission to download content differ by website. SORYVYN should respect source access rules and make the source and origin of each result visible.
+SORYVYN must respect source access rules and make the source and origin of every online result visible. Never bypass DRM, paywalls, authentication, age checks, source access controls, or anti-abuse protections.
