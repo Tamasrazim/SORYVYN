@@ -324,6 +324,17 @@
   function sourceById(id){ return sourceSeed.find(item=>item.id===id); }
   function isSaved(id){ return state.savedIds.includes(id); }
   function isFavorite(id){ return state.favoriteIds.includes(id); }
+  function bookmarkKey(titleId,spread){ return titleId+"|"+spread; }
+  function parseBookmarkKey(key){
+    if(typeof key!=="string")return null;
+    const separator=key.lastIndexOf("|");
+    if(separator<1)return null;
+    const item=titleById(key.slice(0,separator));
+    const spread=Number(key.slice(separator+1));
+    if(!item || !Number.isInteger(spread) || spread<0 || spread>=spreadCountFor(item))return null;
+    return {key,item,spread};
+  }
+  function isBookmarked(titleId,spread){ return state.bookmarks.includes(bookmarkKey(titleId,spread)); }
 
   function toast(message){
     const region = $("#toastRegion");
