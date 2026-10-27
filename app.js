@@ -240,15 +240,20 @@
   }
 
   function exportBackup(){
+    // The portable JSON file intentionally excludes imported image bytes and their local-only IDs.
+    const portableIds = new Set(titles.map(item=>item.id));
+    const portableProgress = Object.fromEntries(
+      Object.entries(state.progress).filter(([id])=>portableIds.has(id))
+    );
     const backup = {
       format:"soryvyn-backup",
       version:1,
       exportedAt:new Date().toISOString(),
       state:{
-        savedIds:state.savedIds.slice(),
-        favoriteIds:state.favoriteIds.slice(),
-        history:state.history.slice(-100),
-        progress:{...state.progress},
+        savedIds:state.savedIds.filter(id=>portableIds.has(id)),
+        favoriteIds:state.favoriteIds.filter(id=>portableIds.has(id)),
+        history:state.history.filter(id=>portableIds.has(id)).slice(-100),
+        progress:portableProgress,
         enabledSources:state.enabledSources.slice(),
         category:state.category,
         genre:state.genre,
@@ -267,7 +272,7 @@
     link.click();
     link.remove();
     window.setTimeout(()=>URL.revokeObjectURL(url),1000);
-    toast("Local backup exported. Keep the JSON file somewhere safe.");
+    toast("Preference backup exported. Local image files are not included.");
   }
 
   async function importBackup(file){
