@@ -611,19 +611,29 @@
   }
 
   function openReader(id){
-    const item = titleById(id || currentTitleId);
-    if(!item) return;
-    currentTitleId = item.id;
-    const previousPage = Math.max(1,Math.min(TOTAL_PAGES,Number(state.progress[item.id] || 1)));
-    readerSpread = Math.min(TOTAL_SPREADS - 1,Math.max(0,Math.floor((previousPage - 1) / 2)));
-    isPageTurning = false;
-    activeFlip = null;
-    pointerDrag = null;
-    $("#readerTitle").textContent = item.title;
-    renderBookSpread();
-    updateReaderUI(true);
+    const item=titleById(id || currentTitleId);
+    if(!item)return;
+    currentTitleId=item.id;
+    const totalPages=pageCountFor(item);
+    const totalSpreads=spreadCountFor(item);
+    const previousPage=Math.max(1,Math.min(totalPages,Number(state.progress[item.id] || 1)));
+    readerSpread=Math.min(totalSpreads-1,Math.max(0,Math.floor((previousPage-1)/2)));
+    isPageTurning=false;activeFlip=null;pointerDrag=null;
+    $("#readerTitle").textContent=item.title;
     closeModal($("#titleModal"));
     showModal($("#readerModal"));
+    if(item.localImport){
+      $("#readerPageLabel").textContent="LOADING LOCAL PAGES";
+      $("#readerProgressLabel").textContent="READING FROM THIS DEVICE";
+      loadLocalPages(item).then(()=>{
+        if(currentTitleId!==item.id || !$("#readerModal").open)return;
+        renderBookSpread();
+        updateReaderUI(true);
+      }).catch(error=>toast("Could not load local pages: "+(error.message || "storage error.")));
+      return;
+    }
+    renderBookSpread();
+    updateReaderUI(true);
   }
 
   function prepareFlip(direction,quiet){
