@@ -124,6 +124,38 @@
       toast("Imported "+images.length+" pages into My Library.");
     }catch(error){toast("Image import failed: "+(error.message || "browser storage error."));}
   }
+  async function removeLocalImportFiles(id){
+    const item=localImportedTitles.find(entry=>entry.id===id);
+    if(!item)return;
+    if(!window.confirm("Remove "+item.title+" and its saved pages from this browser?"))return;
+    try{
+      const db=await openLocalLibraryDB();
+      const tx=db.transaction(["titles","pages"],"readwrite");
+      const done=idbDone(tx);
+      tx.objectStore("titles").delete(id);
+      for(let page=1;page<=item.pageCount;page++)tx.objectStore("pages").delete(localPageKey(id,page));
+      await done;
+      for(let page=1;page<=item.pageCount;page++){
+        const key=id+"|"+page;
+        const url=importedPageUrls.get(key);
+        if(url)URL.revokeObjectURL(url);
+        importedPageUrls.delete(key);
+      }
+      const index=localImportedTitles.findIndex(entry=>entry.id===id);
+      if(index>=0)localImportedTitles.splice(index,1);
+      state.savedIds=state.savedIds.filter(value=>value!==id);
+      state.favoriteIds=state.favoriteIds.filter(value=>value!==id);
+      state.history=state.history.filter(value=>value!==id);
+      delete state.progress[id];
+      persist();renderLibrary();renderHistory();renderFavorites();renderRail();
+      if($("#readerModal").open && currentTitleId===id)closeModal($("#readerModal"));
+      closeModal($("#titleModal"));
+      toast("Local import and stored pages removed.");
+    }catch(error){
+      toast("Could not remove the local import: "+(error.message || "storage error."));
+    }
+  }
+
   const defaultState = {
     savedIds:[], favoriteIds:[], history:[], progress:{}, enabledSources:["northstar","moon","silk","inkhouse"],
     category:"All",genre:"all",status:"all",theme:"dark",noticeDismissed:false
