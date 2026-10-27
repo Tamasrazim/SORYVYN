@@ -188,7 +188,8 @@
     const progress = {};
     if(incoming.progress && typeof incoming.progress === "object" && !Array.isArray(incoming.progress)){
       for(const [id,value] of Object.entries(incoming.progress)){
-        if(knownTitles.has(id) && Number.isInteger(value) && value >= 1 && value <= TOTAL_PAGES) progress[id]=value;
+        const knownTitle=titleById(id);
+        if(knownTitle && Number.isInteger(value) && value >= 1 && value <= pageCountFor(knownTitle)) progress[id]=value;
       }
     }
     const knownGenres = new Set(["all",...new Set(titles.flatMap(item=>[item.genre,...item.tags]))]);
