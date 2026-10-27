@@ -695,7 +695,6 @@
 
   // Initial application state.
   $("#footerYear").textContent=new Date().getFullYear();
-  $("#demoNoticeDismissed");
   if(state.noticeDismissed)$("#dismissNotice").closest(".demo-notice").remove();
   renderTheme();renderCounters();renderMiniSources();renderDiscover();renderRail();renderSources();
   const initialRoute=location.hash.replace("#","").trim();
