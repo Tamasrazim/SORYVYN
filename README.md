@@ -8,7 +8,7 @@ SORYVYN is a desktop-first reading app with a local library, an online source ca
 
 ## Web PWA status — Chunk 01
 
-The first browser-first build is available from `index.html`. It includes the responsive SORYVYN shell, monochrome interface, Discover catalogue using eight original fictional sample titles, Manga/Manhwa/Manhua filters, search and sorting, title details, a local reader preview, browser-storage persistence for saved items/favorites/history/progress, and an internal source-browser sandbox. The PWA manifest, SVG icon, service worker, and initial offline app-shell cache are included. A GitHub Actions workflow checks JavaScript syntax and core PWA/category-scope assumptions.
+The first browser-first build is available from `index.html`. It includes the responsive SORYVYN shell, monochrome interface, Discover catalogue using eight original fictional sample titles, Manga/Manhwa/Manhua filters, search and sorting, title details, a 3D open-book reader preview with two facing pages and interactive page-turning, browser-storage persistence for saved items/favorites/history/progress, and an internal source-browser sandbox. The PWA manifest, SVG icon, service worker, and initial offline app-shell cache are included. A GitHub Actions workflow checks JavaScript syntax and core PWA/category-scope assumptions.
 
 **Important:** sample sources are placeholders, not live services. The source browser intentionally stays inside SORYVYN and cannot browse arbitrary websites. Real source adapters and live chapter downloads are later chunks.
 
