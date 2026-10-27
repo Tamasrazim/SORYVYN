@@ -61,3 +61,4 @@ Chunk 01 is a functional front-end prototype with local sample data, not a live 
 - The deployment workflow uses the repository's GitHub Pages environment. If the first run reports that Pages is not enabled or configured for Actions, set **Repository Settings → Pages → Build and deployment → Source → GitHub Actions**, then rerun the workflow.
 - Intended public URL: https://tamasrazim.github.io/SORYVYN/ (available after a successful deployment).
 - `privacy.html` documents the current local-only preview behavior and is included in the offline app shell.
+- Local library backup export/import now preserves saved IDs, favorites, reading history/progress, source toggles, theme, filters, and notice state. Imports are schema-checked, constrained to known demo IDs, and require confirmation before replacing local state.
