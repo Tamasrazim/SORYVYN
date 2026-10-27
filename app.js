@@ -395,8 +395,9 @@
     $("#savedStat").textContent=String(state.savedIds.length).padStart(2,"0");
     $("#historyStat").textContent=String(new Set(state.history).size).padStart(2,"0");
     $("#readStat").textContent=String(Object.values(state.progress).filter(page=>Number(page)>=8).length).padStart(2,"0");
-    $("#storagePercent").textContent=Math.min(100,Math.round(state.savedIds.length/titles.length*100))+"%";
-    $("#storageFill").style.width=Math.min(100,state.savedIds.length/titles.length*100)+"%";
+    const capacity=Math.max(1,titles.length+localImportedTitles.length);
+    $("#storagePercent").textContent=Math.min(100,Math.round(state.savedIds.length/capacity*100))+"%";
+    $("#storageFill").style.width=Math.min(100,state.savedIds.length/capacity*100)+"%";
     $("#storageLabel").textContent=state.savedIds.length?state.savedIds.length+" saved "+(state.savedIds.length===1?"title":"titles"):"Demo collection";
     $("#footerYear").textContent=new Date().getFullYear();
   }
