@@ -55,11 +55,17 @@ jobs:
           assert.match(html, /id="bookSpread"/, 'Two-page book spread is missing');
           assert.match(html, /id="leftBookPage"/, 'Left book page is missing');
           assert.match(html, /id="rightBookPage"/, 'Right book page is missing');
-          assert.match(html, /id="bookFrame"/, 'Draggable 3D book frame is missing');
+          assert.match(html, /id="bookFrame" tabindex="0"/, '3D book must be keyboard focusable');
+          assert.match(html, /id="readerPageLabel" aria-live="polite"/, 'Page turns should be announced accessibly');
           assert.match(css, /\.book-flip-sheet/, '3D page-turn layer is missing');
+          assert.match(js, /let readerSpread = 0;/, 'Current book spread state is missing');
+          assert.match(js, /const TOTAL_SPREADS = Math\.ceil\(TOTAL_PAGES \/ 2\)/, 'Two-page spread pagination is missing');
+          assert.match(js, /function renderBookPageContent\(/, 'Book page rendering is missing');
           assert.match(js, /addEventListener\("pointerdown"/, 'Pointer drag must be supported');
+          assert.match(js, /addEventListener\("pointermove"/, 'Live page dragging must be supported');
           assert.match(js, /addEventListener\("wheel"/, 'Mouse-wheel page turning must be supported');
           assert.match(js, /function turnSpread\(/, 'Spread navigation must be implemented');
+          assert.doesNotMatch(js, /readerPageArt|readerCanvas|readerMode/, 'Old single-page preview code should be removed');
           assert.equal(manifest.display, 'standalone', 'PWA should install in standalone mode');
           assert.ok(manifest.icons?.length, 'PWA icon is required');
           assert.match(sw, /addAll\(APP_SHELL\)/, 'Service worker must precache the app shell');
