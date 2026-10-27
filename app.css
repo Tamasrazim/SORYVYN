@@ -1,11 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
-
 :root{
   color-scheme:dark;
   --bg:#0b0c0d;--panel:#111214;--panel-2:#151719;--panel-3:#1b1d20;--line:rgba(240,241,238,.095);
   --line-strong:rgba(240,241,238,.16);--text:#f0f0ed;--muted:#929491;--soft:#b9bbb6;--white:#fff;
   --accent:#e8e8e3;--accent-ink:#121313;--good:#b9d3b0;--bad:#d8a5a5;
-  --mono:"DM Mono",ui-monospace,SFMono-Regular,Consolas,monospace;--sans:"Manrope",Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;--sans:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --sidebar:226px;--right-rail:282px;--radius:16px;--shadow:0 24px 70px rgba(0,0,0,.3);
 }
 *{box-sizing:border-box}
