@@ -40,7 +40,7 @@ Build a real source adapter interface and registry. Define per-source metadata, 
 Implement progressive multi-source search, results grouped by source, normalization, cautious duplicate handling, metadata, filters supported by each source, title details and chapter lists. Keep results from healthy sources visible when another fails. Apply the allowlist and suitability policy at every entry point.
 
 ## Chunk 04 — Real reader and local import
-Replace the Chunk 01 illustrated reader preview with a real image-page reader. Add native file picker / drag-and-drop import, archive-safe CBZ/ZIP and image-folder handling, right-to-left and left-to-right page reading, double-page layout, webtoon scrolling, zoom, bookmarks and persisted progress. Add EPUB/PDF only if separately implemented and tested; they are not online source categories.
+**Partial:** the web PWA can import folders of manga page images into IndexedDB, restore them on later visits, and show the actual page images in the interactive 3D two-page book. Imports are limited to 300 pages and 200 MB per folder (30 MB per page) and remain local to the current browser profile. Next: safe CBZ/ZIP handling, right-to-left settings, single/double-page options, webtoon scrolling, zoom, bookmarks, and broader browser testing. Add EPUB/PDF only if separately implemented and tested; they are not online source categories.
 
 ## Chunk 05 — Offline chapter downloads
 Add a persistent download queue, progress, cancel/pause/resume/retry, rate limiting, per-source concurrency, safe page cache, interrupted-task recovery and verified offline chapter status. Respect source permissions and access controls. Do not add arbitrary file or executable downloads to the source browser.
@@ -62,3 +62,4 @@ Chunk 01 is a functional front-end prototype with local sample data, not a live 
 - Intended public URL: https://tamasrazim.github.io/SORYVYN/ (available after a successful deployment).
 - `privacy.html` documents the current local-only preview behavior and is included in the offline app shell.
 - Local library backup export/import now preserves saved IDs, favorites, reading history/progress, source toggles, theme, filters, and notice state. Imports are schema-checked, constrained to known demo IDs, and require confirmation before replacing local state.
+- Local image-folder imports are stored in IndexedDB and restored on startup. The standard JSON preference backup does not include the image bytes, so users must copy/re-import the original image folder on another device.
