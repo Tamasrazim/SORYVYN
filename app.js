@@ -544,16 +544,17 @@
   }
 
   function changeRoute(next){
-    if(!["discover","library","updates","downloads","sources","history","favorites"].includes(next))return;
+    if(!["discover","library","updates","downloads","sources","history","favorites","bookmarks"].includes(next))return;
     route=next;
     $$(".page[data-page]").forEach(page=>page.hidden=page.dataset.page!==route);
     $$(".nav-item[data-route]").forEach(button=>button.classList.toggle("is-active",button.dataset.route===route));
-    const labels={discover:"Discover",library:"My library",updates:"Updates",downloads:"Downloads",sources:"Source browser",history:"Reading history",favorites:"Favorites"};
+    const labels={discover:"Discover",library:"My library",updates:"Updates",downloads:"Downloads",sources:"Source browser",history:"Reading history",favorites:"Favorites",bookmarks:"Bookmarks"};
     $("#crumbCurrent").textContent=labels[route];
     if(route==="discover")renderDiscover();
     if(route==="library")renderLibrary();
     if(route==="history")renderHistory();
     if(route==="favorites")renderFavorites();
+    if(route==="bookmarks")renderBookmarks();
     if(route==="sources")renderSources();
     $("#scrollArea").scrollTo({top:0,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
     if(location.hash!== "#"+route)history.replaceState(null,"","#"+route);
