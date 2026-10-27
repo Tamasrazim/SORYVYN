@@ -42,6 +42,8 @@ jobs:
           test -f icon.svg
           test -f privacy.html
           test -f LICENSE
+          test -f robots.txt
+          test -f sitemap.xml
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -49,7 +51,7 @@ jobs:
       - name: Assemble static site
         run: |
           mkdir -p dist
-          cp index.html app.css app.js manifest.webmanifest sw.js icon.svg privacy.html LICENSE dist/
+          cp index.html app.css app.js manifest.webmanifest sw.js icon.svg privacy.html LICENSE robots.txt sitemap.xml dist/
           touch dist/.nojekyll
 
       - name: Upload Pages artifact
