@@ -718,14 +718,17 @@
     }
   }
 
-  function openReader(id){
+  function openReader(id,requestedSpread=null){
     const item=titleById(id || currentTitleId);
     if(!item)return;
     currentTitleId=item.id;
     const totalPages=pageCountFor(item);
     const totalSpreads=spreadCountFor(item);
     const previousPage=Math.max(1,Math.min(totalPages,Number(state.progress[item.id] || 1)));
-    readerSpread=Math.min(totalSpreads-1,Math.max(0,Math.floor((previousPage-1)/2)));
+    const savedSpread=Math.floor((previousPage-1)/2);
+    readerSpread=Number.isInteger(requestedSpread)
+      ? Math.min(totalSpreads-1,Math.max(0,requestedSpread))
+      : Math.min(totalSpreads-1,Math.max(0,savedSpread));
     isPageTurning=false;activeFlip=null;pointerDrag=null;
     $("#readerTitle").textContent=item.title;
     closeModal($("#titleModal"));
